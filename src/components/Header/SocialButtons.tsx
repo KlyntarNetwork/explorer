@@ -1,4 +1,5 @@
 import { Box, Menu, MenuItem, Typography } from "@mui/material";
+import type { SvgIconProps } from "@mui/material/SvgIcon";
 import ChangeCircleIcon from "@mui/icons-material/ChangeCircle";
 import AssuredWorkloadIcon from "@mui/icons-material/AssuredWorkload";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
@@ -11,9 +12,9 @@ import React, { useState } from "react";
 import { Link, Search, Code } from "@mui/icons-material";
 
 interface DropdownData {
-  Tools: { name: string; icon: React.ComponentType }[];
-  Explore: { name: string; icon: React.ComponentType }[];
-  Services: { name: string; icon: React.ComponentType }[];
+  Tools: { name: string; icon: React.ComponentType<SvgIconProps> }[];
+  Explore: { name: string; icon: React.ComponentType<SvgIconProps> }[];
+  Services: { name: string; icon: React.ComponentType<SvgIconProps> }[];
 }
 
 export const SocialButtons = () => {

@@ -2,6 +2,7 @@
 import { FC } from 'react';
 import { Box, Typography } from '@mui/material';
 import dynamic from 'next/dynamic';
+import type { ApexOptions } from 'apexcharts';
 
 const ApexCharts = dynamic(() => import('react-apexcharts'), {
   ssr: false
@@ -34,7 +35,7 @@ export const CoinInfoCard: FC = () => {
   const chartData = generateChartData();
   const chartCategories = Array.from({ length: 14 }, (_, i) => i + 1);
   
-  const chartOptions = {
+  const chartOptions: ApexOptions = {
     chart: {
       type: 'area',
       height: 80,
@@ -86,7 +87,6 @@ export const CoinInfoCard: FC = () => {
     tooltip: {
       theme: 'dark',
       style: {
-        color: '#fff',
         fontSize: '12px',
       },
     },
@@ -291,13 +291,7 @@ export const CoinInfoCard: FC = () => {
           </Typography>
           <Box sx={{ height: '80px', width: '100%' }}>
             <ApexCharts
-              options={{
-                ...chartOptions,
-                chart: {
-                  ...chartOptions.chart,
-                  height: 80,
-                },
-              }}
+              options={chartOptions}
               series={chartSeries}
               type="area"
               height={80}
