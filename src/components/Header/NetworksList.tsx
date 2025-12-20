@@ -67,10 +67,22 @@ export const DesktopNetworksList: FC<{ sx?: SxProps }> = ({ sx }) => {
         aria-expanded={isOpen ? 'true' : undefined}
         onClick={handleOpen}
         sx={{
-          background: isOpen ? BG_COLORS.DARK_GRAY_HOVER : BG_COLORS.DARK_GRAY,
-          ':hover': { background: BG_COLORS.DARK_GRAY_HOVER },
-          py: 1.5,
-          px: 2
+          border: '1px solid rgba(255,255,255,0.1)',
+          backgroundColor: isOpen ? 'rgba(17, 17, 17, 0.5)' : 'rgba(17, 17, 17, 0.3)',
+          backdropFilter: 'blur(5px)',
+          color: '#fff',
+          textTransform: 'uppercase',
+          letterSpacing: '0.08em',
+          fontSize: { xs: '0.75rem', md: '0.8125rem' },
+          fontWeight: 400,
+          py: { xs: 1, md: 1.25 },
+          px: { xs: 1.25, md: 1.5 },
+          borderRadius: 0,
+          transition: 'border-color 0.3s ease, background-color 0.3s ease',
+          ':hover': { 
+            background: 'rgba(17, 17, 17, 0.5)',
+            borderColor: 'rgba(255,255,255,0.15)',
+          },
         }}
       >
         <Indicator />
@@ -87,6 +99,14 @@ export const DesktopNetworksList: FC<{ sx?: SxProps }> = ({ sx }) => {
         }}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        PaperProps={{
+          sx: {
+            backgroundColor: '#000',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: 0,
+            mt: 0.5,
+          }
+        }}
       >
         {networks.map(({ base, label, url }) => (
           <MenuItem
@@ -96,18 +116,31 @@ export const DesktopNetworksList: FC<{ sx?: SxProps }> = ({ sx }) => {
             onClick={handleClose}
             sx={{
               borderRadius: '0px !important',
-              px: 2,
-              py: 1,
-              cursor: isCurrentNetwork(base) ? 'default' : 'pointer'
+              px: { xs: 1.5, md: 2 },
+              py: { xs: 0.875, md: 1 },
+              backgroundColor: 'transparent',
+              borderBottom: '1px solid rgba(255,255,255,0.05)',
+              cursor: isCurrentNetwork(base) ? 'default' : 'pointer',
+              transition: 'background-color 0.3s ease',
+              '&:hover': {
+                backgroundColor: 'rgba(17, 17, 17, 0.3)',
+              },
+              '&:last-child': {
+                borderBottom: 'none',
+              },
             }}
           >
             <Indicator
               color={isCurrentNetwork(base) ? COLORS.GREEN : 'transparent'}
             />
             <Typography
-              color={isCurrentNetwork(base) ? 'primary' : 'text.primary'}
+              color={isCurrentNetwork(base) ? '#7aeee5' : 'rgba(255,255,255,0.7)'}
               variant='caption'
-              sx={{ fontWeight: 'bold', fontSize: '14px' }}
+              sx={{ 
+                fontWeight: 400, 
+                fontSize: { xs: '0.8125rem', md: '0.875rem' },
+                letterSpacing: '0.02em',
+              }}
               onClick={() => logUserAction(USER_ACTIONS.SWITCH_NETWORK, { location: LOCATION.HEADER, value: base })}
             >
               {label}

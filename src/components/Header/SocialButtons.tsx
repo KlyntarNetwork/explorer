@@ -1,4 +1,4 @@
-import { Box, Menu, MenuItem, Typography, Grid } from "@mui/material";
+import { Box, Menu, MenuItem, Typography } from "@mui/material";
 import ChangeCircleIcon from "@mui/icons-material/ChangeCircle";
 import AssuredWorkloadIcon from "@mui/icons-material/AssuredWorkload";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
@@ -61,7 +61,10 @@ export const SocialButtons = () => {
         key={"more_button"}
         text="More"
         sx={{
-          width: "84px",
+          width: { xs: "70px", md: "84px" },
+          fontSize: { xs: '0.75rem', md: '0.8125rem' },
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
         }}
         onClick={handleClick}
       />
@@ -74,42 +77,83 @@ export const SocialButtons = () => {
           "aria-labelledby": "basic-button",
         }}
         PaperProps={{
-          style: {
+          sx: {
             width: "100%",
             backgroundColor: "#000",
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: 0,
+            mt: 0.5,
           },
         }}
       >
-        <Grid container spacing={5} sx={{ padding: 5 }}>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
+            gap: { xs: 2, md: 3 },
+            p: { xs: 2, md: 2.5 },
+            minWidth: { xs: '280px', sm: '400px', md: '600px' },
+          }}
+        >
           {dropdownKeys.map((columnTitle) => (
-            <Grid item xs={12} sm={6} md={4} key={columnTitle}>
+            <Box key={columnTitle}>
               <Typography
                 variant="subtitle1"
-                fontWeight="bold"
-                mb={1}
-                color="inherit"
+                sx={{
+                  fontSize: { xs: '0.6875rem', md: '0.75rem' },
+                  textTransform: 'uppercase',
+                  letterSpacing: { xs: '0.25em', md: '0.35em' },
+                  color: 'rgba(255,255,255,0.5)',
+                  fontWeight: 400,
+                  mb: { xs: 1, md: 1.25 },
+                }}
               >
                 {columnTitle}
               </Typography>
-              {dropdownData[columnTitle].map(({ name, icon: Icon }) => (
-                <MenuItem
-                  key={name}
-                  onClick={handleClose}
-                  sx={{
-                    color: "inherit",
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                >
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <Icon />
-                    <Typography sx={{ ml: 1 }}>{name}</Typography>
-                  </Box>
-                </MenuItem>
-              ))}
-            </Grid>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 0.5,
+                }}
+              >
+                {dropdownData[columnTitle].map(({ name, icon: Icon }) => (
+                  <MenuItem
+                    key={name}
+                    onClick={handleClose}
+                    sx={{
+                      color: 'rgba(255,255,255,0.7)',
+                      display: "flex",
+                      alignItems: "center",
+                      px: { xs: 0.875, md: 1 },
+                      py: { xs: 0.625, md: 0.75 },
+                      borderRadius: 0,
+                      border: '1px solid transparent',
+                      transition: 'color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease',
+                      '&:hover': {
+                        backgroundColor: 'rgba(17, 17, 17, 0.4)',
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        color: '#fff',
+                      },
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.75, md: 1 } }}>
+                      <Icon sx={{ fontSize: { xs: '0.9375rem', md: '1rem' }, opacity: 0.7 }} />
+                      <Typography 
+                        sx={{ 
+                          fontSize: { xs: '0.8125rem', md: '0.875rem' },
+                          letterSpacing: '0.02em',
+                        }}
+                      >
+                        {name}
+                      </Typography>
+                    </Box>
+                  </MenuItem>
+                ))}
+              </Box>
+            </Box>
           ))}
-        </Grid>
+        </Box>
       </Menu>
       {socialIconsWithLinks.map(({ icon: Icon, url }) => (
         <OutlinedButton key={url} icon={<Icon />} url={url} />

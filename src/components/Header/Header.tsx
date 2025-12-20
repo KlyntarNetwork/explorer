@@ -42,17 +42,23 @@ export const Header = () => {
   }, []);
 
   return (
-    <PageContainer
-      sx={{ pt: 2.5, pb: 3.5 }}
+    <Box
+      sx={{
+        backgroundColor: '#000',
+        borderBottom: '1px solid rgba(255,255,255,0.1)',
+      }}
     >
-      <Box
-        sx={{
-          gap: { xs: 2, md: 4 },
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
+      <PageContainer
+        sx={{ pt: { xs: 1.5, md: 2 }, pb: { xs: 1.5, md: 2 } }}
       >
+        <Box
+          sx={{
+            gap: { xs: 2, md: 4 },
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
         <Link href='/'>
           <KlyntarFoundationLogo />
         </Link>
@@ -98,7 +104,11 @@ export const Header = () => {
               },} }}
       >
         <List
-          sx={{ width: '100%', borderBottom: 1 }}
+          sx={{ 
+            width: '100%', 
+            borderBottom: '1px solid rgba(255,255,255,0.1)',
+            backgroundColor: '#000',
+          }}
           component='div'
         >
           {mobileHeaderElements.map(({ id, label, element: Element }) => (
@@ -107,9 +117,26 @@ export const Header = () => {
                 onClick={() =>
                   setOpenedElement(openedElement === id ? null : id)
                 }
+                sx={{
+                  borderBottom: '1px solid rgba(255,255,255,0.05)',
+                  '&:hover': {
+                    backgroundColor: 'rgba(17, 17, 17, 0.3)',
+                  },
+                }}
               >
-                <ListItemText primary={label} />
-                {openedElement === id ? <ExpandLess /> : <ExpandMore />}
+                <ListItemText 
+                  primary={label}
+                  primaryTypographyProps={{
+                    sx: {
+                      fontSize: { xs: '0.8125rem', md: '0.875rem' },
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.08em',
+                      color: 'rgba(255,255,255,0.7)',
+                      fontWeight: 400,
+                    }
+                  }}
+                />
+                {openedElement === id ? <ExpandLess sx={{ color: 'rgba(255,255,255,0.7)' }} /> : <ExpandMore sx={{ color: 'rgba(255,255,255,0.7)' }} />}
               </ListItemButton>
               <Collapse
                 in={openedElement === id}
@@ -124,6 +151,7 @@ export const Header = () => {
           ))}
         </List>
       </Collapse>
-    </PageContainer>
+      </PageContainer>
+    </Box>
   );
 };

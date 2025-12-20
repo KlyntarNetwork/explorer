@@ -1,0 +1,2 @@
+export { CoinInfoCard } from './CoinInfoCard';
+
