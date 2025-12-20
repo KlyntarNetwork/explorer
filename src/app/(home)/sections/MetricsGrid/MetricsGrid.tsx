@@ -2,12 +2,12 @@
 import { FC, useEffect, useState, useRef } from 'react';
 import { Box, Typography } from '@mui/material';
 import { BlockchainData } from '@/definitions';
-import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
-import LockIcon from '@mui/icons-material/Lock';
-import PeopleIcon from '@mui/icons-material/People';
-import AccountTreeIcon from '@mui/icons-material/AccountTree';
-import HistoryIcon from '@mui/icons-material/History';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import HowToRegOutlinedIcon from '@mui/icons-material/HowToRegOutlined';
+import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined';
+import TimelapseOutlinedIcon from '@mui/icons-material/TimelapseOutlined';
+import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined';
 
 interface Props {
   data: BlockchainData
@@ -115,6 +115,7 @@ const MetricCard: FC<MetricCardProps> = ({
 
   const isSoon = displayValue === 'SOON';
   const isZeroOrNA = displayValue === 0 || displayValue === 'N/A' || displayValue === '0';
+  const isNegativeChange = `${change24h}`.trim().startsWith('-');
   const formattedValue = typeof displayValue === 'number' 
     ? displayValue.toLocaleString() 
     : displayValue;
@@ -251,17 +252,31 @@ const MetricCard: FC<MetricCardProps> = ({
         <Typography
           sx={{
             fontSize: { xs: '0.625rem', md: '0.6875rem' },
-            color: '#7aeee5',
             fontWeight: 400,
             display: 'flex',
             alignItems: 'center',
-            gap: 0.5,
+            gap: 0.25,
           }}
         >
-          <Box component='span' sx={{ fontSize: '0.6875rem' }}>
-            +
+          <Box
+            component='span'
+            sx={{
+              color: isNegativeChange ? 'rgba(255, 49, 49, 0.9)' : '#7aeee5',
+            }}
+          >
+            {change24h}
           </Box>
-          {change24h}
+          <Box
+            component='span'
+            sx={{
+              fontSize: { xs: '0.5625rem', md: '0.625rem' },
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: 'rgba(255,255,255,0.45)',
+            }}
+          >
+            (24H)
+          </Box>
         </Typography>
       </Box>
     </Box>
@@ -270,12 +285,12 @@ const MetricCard: FC<MetricCardProps> = ({
 
 export const MetricsGrid: FC<Props> = ({ data }) => {
   const items: MetricCardProps[] = [
-    { title: 'Total Transactions', value: data.totalTxsNumber, change24h: '+10,303,753', icon: SwapHorizIcon },
-    { title: 'Total Staked', value: data.totalStaked, change24h: '+0.63%', icon: LockIcon },
-    { title: 'Validators', value: data.validatorsNumber, change24h: '+205', icon: PeopleIcon },
-    { title: 'Shards', value: data.shardsNumber, change24h: '+2', icon: AccountTreeIcon },
-    { title: 'Epoch ID', value: data.epochId, change24h: '+1', icon: HistoryIcon },
-    { title: 'TXS Success', value: data.txsSuccessRate, change24h: '+0.5%', icon: CheckCircleIcon },
+    { title: 'Total Transactions', value: data.totalTxsNumber, change24h: '+10,303,753', icon: ReceiptLongOutlinedIcon },
+    { title: 'Total Staked', value: data.totalStaked, change24h: '+0.63%', icon: LockOutlinedIcon },
+    { title: 'Validators', value: data.validatorsNumber, change24h: '+205', icon: HowToRegOutlinedIcon },
+    { title: 'Shards', value: data.shardsNumber, change24h: '+2', icon: GridViewOutlinedIcon },
+    { title: 'Epoch ID', value: data.epochId, change24h: '+1', icon: TimelapseOutlinedIcon },
+    { title: 'TXS Success', value: data.txsSuccessRate, change24h: '+0.5%', icon: TaskAltOutlinedIcon },
   ];
 
   return (
