@@ -1,7 +1,7 @@
 'use client';
 import { ChangeEvent, KeyboardEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { SelectChangeEvent, } from '@mui/material';
+import { SelectChangeEvent } from '@mui/material';
 import { FlexBetweenBox, GeometricButton } from '@/components/ui';
 import { FilterDropdown } from './FilterDropdown';
 import { SearchInput } from './SearchInput';

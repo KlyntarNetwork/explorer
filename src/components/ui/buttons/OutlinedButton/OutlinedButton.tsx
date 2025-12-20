@@ -4,7 +4,8 @@ import { Button, ButtonProps } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Link from 'next/link';
 
-interface OutlinedButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface OutlinedButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: React.ReactElement;
   text?: string;
   url?: string;
@@ -29,6 +30,7 @@ export const OutlinedButton: FC<OutlinedButtonProps> = ({
   url = '',
   onClick,
   sx,
+  ...rest
 }) => {
   const isLink = !!url;
 
@@ -49,6 +51,7 @@ export const OutlinedButton: FC<OutlinedButtonProps> = ({
       ...sx,
     },
     variant: 'outlined',
+    ...rest,
     ...(isLink
       ? {
           component: Link,
