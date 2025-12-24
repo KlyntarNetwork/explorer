@@ -175,43 +175,43 @@ export const SocialButtons = () => {
             </Box>
 
             {/* Right columns */}
-            <Box
-              sx={{
+        <Box
+          sx={{
                 p: { xs: 2, md: 2.5 },
                 display: "grid",
                 gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)", md: "repeat(3, 1fr)" },
-                gap: { xs: 2, md: 3 },
+            gap: { xs: 2, md: 3 },
                 maxHeight: "min(560px, calc(100vh - 120px))",
                 overflow: "auto",
-              }}
-            >
-              {dropdownKeys.map((columnTitle) => (
-                <Box key={columnTitle}>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{
+          }}
+        >
+          {dropdownKeys.map((columnTitle) => (
+            <Box key={columnTitle}>
+              <Typography
+                variant="subtitle1"
+                sx={{
                       fontSize: { xs: "0.75rem", md: "0.75rem" },
                       textTransform: "uppercase",
                       letterSpacing: { xs: "0.22em", md: "0.28em" },
                       color: "rgba(255,255,255,0.45)",
                       fontWeight: 600,
-                      mb: { xs: 1, md: 1.25 },
-                    }}
-                  >
-                    {columnTitle}
-                  </Typography>
+                  mb: { xs: 1, md: 1.25 },
+                }}
+              >
+                {columnTitle}
+              </Typography>
 
                   <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
                     {dropdownData[columnTitle].map(({ name, icon: Icon, badge }, idx) => (
-                      <MenuItem
-                        key={name}
-                        onClick={handleClose}
-                        sx={{
+                  <MenuItem
+                    key={name}
+                    onClick={handleClose}
+                    sx={{
                           // pill buttons on dark panel
                           backgroundColor: "rgba(255,255,255,0.05)",
                           color: "rgba(255,255,255,0.92)",
-                          display: "flex",
-                          alignItems: "center",
+                      display: "flex",
+                      alignItems: "center",
                           justifyContent: "space-between",
                           px: { xs: 1, md: 1.25 },
                           py: { xs: 1, md: 1 },
@@ -237,19 +237,19 @@ export const SocialButtons = () => {
                           "@keyframes klyMegaItemIn": {
                             "0%": { opacity: 0, transform: "translateY(-6px)" },
                             "100%": { opacity: 1, transform: "translateY(0)" },
-                          },
+                      },
                           animation: open
                             ? "klyMegaItemIn 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both"
                             : "none",
                           animationDelay: open ? `${60 + idx * 35}ms` : "0ms",
-                        }}
-                      >
+                    }}
+                  >
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
                           <Icon sx={{ fontSize: "1.05rem", color: "rgba(255,255,255,0.72)" }} />
                           <Typography sx={{ fontSize: "0.92rem", letterSpacing: "-0.01em" }}>
-                            {name}
-                          </Typography>
-                        </Box>
+                        {name}
+                      </Typography>
+                    </Box>
 
                         {badge ? (
                           <Box
@@ -268,11 +268,11 @@ export const SocialButtons = () => {
                             {badge}
                           </Box>
                         ) : null}
-                      </MenuItem>
-                    ))}
-                  </Box>
-                </Box>
-              ))}
+                  </MenuItem>
+                ))}
+              </Box>
+            </Box>
+          ))}
             </Box>
           </Box>
         </Box>

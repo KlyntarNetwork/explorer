@@ -17,14 +17,15 @@ export const TopStatsRow: FC<Props> = ({ data }) => {
         <Box
           sx={{
             // Важно: фиксируем высоту на lg+, чтобы не было "дотягивания" после гидратации
-            height: { xs: 'auto', lg: '22.5rem' },
+            // Чуть ниже, чтобы карточки выглядели более "прямоугольными", но правая секция оставалась идеально вровень
+            height: { xs: 'auto', lg: '20rem' },
           }}
         >
           <MetricsGrid data={data} />
         </Box>
       </Grid>
       <Grid item xs={12} lg={6}>
-        <Box sx={{ height: { xs: 'auto', lg: '22.5rem' } }}>
+        <Box sx={{ height: { xs: 'auto', lg: '20rem' } }}>
           <CoinInfoCard />
         </Box>
       </Grid>

@@ -12,11 +12,16 @@ const ApexCharts = dynamic(() => import('react-apexcharts'), {
 const generateChartData = () => {
   const baseValue = 94684390473;
   const data = [];
-  const now = Date.now();
   for (let i = 0; i < 14; i++) {
     // Создаем небольшие колебания с небольшим трендом вверх
     const daysAgo = 13 - i;
-    const variation = Math.sin(daysAgo * 0.5) * 0.0005 + (13 - daysAgo) * 0.0001;
+    // Делаем колебания заметнее, чтобы график не выглядел "почти горизонтальной линией"
+    // (детерминированно, без рандома — чтобы не было визуальных скачков при ререндере)
+    // Умеренная амплитуда (чтобы не выглядело как "горки"), но заметно для 80–90px графика
+    const wave1 = Math.sin(daysAgo * 0.75) * 0.0018;
+    const wave2 = Math.cos(daysAgo * 0.35) * 0.0011;
+    const trend = (13 - daysAgo) * 0.00022;
+    const variation = wave1 + wave2 + trend;
     data.push(Math.floor(baseValue * (1 + variation)));
   }
   return data;
@@ -34,20 +39,28 @@ export const CoinInfoCard: FC = () => {
   
   const chartData = generateChartData();
   const chartCategories = Array.from({ length: 14 }, (_, i) => i + 1);
+
+  // Make the chart look less "flat" by tightening Y scale around the visible range
+  const minY = Math.min(...chartData);
+  const maxY = Math.max(...chartData);
+  const rangeY = Math.max(1, maxY - minY);
+  const yPadding = rangeY * 0.06;
   
   const chartOptions: ApexOptions = {
+    colors: ['#7aeee5'],
     chart: {
       type: 'area',
-      height: 80,
+      height: '100%',
       toolbar: { show: false },
       zoom: { enabled: false },
-      sparkline: { enabled: false },
+      sparkline: { enabled: true },
     },
     dataLabels: { enabled: false },
     stroke: {
       curve: 'smooth',
       width: 2,
       colors: ['#7aeee5'],
+      lineCap: 'round',
     },
     fill: {
       type: 'gradient',
@@ -78,8 +91,13 @@ export const CoinInfoCard: FC = () => {
       labels: { show: false },
       axisBorder: { show: false },
       axisTicks: { show: false },
+      crosshairs: {
+        show: true,
+      },
     },
     yaxis: {
+      min: minY - yPadding,
+      max: maxY + yPadding,
       labels: { show: false },
       axisBorder: { show: false },
       axisTicks: { show: false },
@@ -89,9 +107,28 @@ export const CoinInfoCard: FC = () => {
       style: {
         fontSize: '12px',
       },
+      // Keep tooltip inside the chart area (prevents clipping on edges with overflow: hidden)
+      fixed: {
+        enabled: true,
+        position: 'topLeft',
+        offsetX: 12,
+        offsetY: 10,
+      },
+      x: {
+        formatter: (val) => `Day ${val}`,
+      },
+      y: {
+        formatter: (val) => Math.round(val).toLocaleString(),
+      },
+      marker: {
+        // Disable tooltip marker to avoid "stuck dot" after mouse leave
+        show: false,
+      },
     },
     markers: {
       size: 0,
+      strokeWidth: 0,
+      hover: { size: 0, sizeOffset: 0 },
     },
   };
   
@@ -108,8 +145,11 @@ export const CoinInfoCard: FC = () => {
         borderRadius: { xs: '0.5rem', md: '0.75rem' },
         p: { xs: '1rem', md: '1.25rem' },
         height: '100%',
+        overflow: 'hidden',
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
         position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
         '&::after': {
           content: '""',
           position: 'absolute',
@@ -275,8 +315,16 @@ export const CoinInfoCard: FC = () => {
       />
 
       {/* Chart and Supply Info */}
-      <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', md: 'row' } }}>
-        <Box sx={{ flex: 1 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 2,
+          flexDirection: { xs: 'column', md: 'row' },
+          flex: 1,
+          minHeight: 0,
+        }}
+      >
+        <Box sx={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
           <Typography
             sx={{
               fontSize: { xs: '0.625rem', md: '0.6875rem' },
@@ -289,12 +337,23 @@ export const CoinInfoCard: FC = () => {
           >
             Total Supply (14d)
           </Typography>
-          <Box sx={{ height: '80px', width: '100%' }}>
+          <Box
+            sx={{
+              flex: 1,
+              minHeight: 120,
+              width: '100%',
+              overflow: 'hidden',
+              // Apex sometimes paints outside the container (sparkline/svg overflow); clip it
+              '& .apexcharts-canvas, & .apexcharts-svg': {
+                overflow: 'hidden !important',
+              },
+            }}
+          >
             <ApexCharts
               options={chartOptions}
               series={chartSeries}
               type="area"
-              height={80}
+              height="100%"
             />
           </Box>
           <Typography
