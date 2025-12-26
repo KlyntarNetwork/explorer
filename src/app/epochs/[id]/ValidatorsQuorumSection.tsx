@@ -1,6 +1,5 @@
 'use client';
 import { Box, Typography } from '@mui/material';
-import { InfoBlock } from '@/components/ui';
 import { Epoch } from '@/definitions';
 import React, { FC } from 'react';
 import { VadlidatorsTable } from '@/components/ui/tables/ValidatorsTable';
@@ -39,18 +38,44 @@ export const ValidatorsQuorumSection: FC<{ epoch: Epoch }> = ({
   }));
 
   return (
-    <>
-      <Typography variant='h1' sx={{ mt: 10, mb: 2 }}>Epoch validators</Typography>
-      <Typography sx={{ mt: 1, mb: 3 }}>List of pools that were ready to protect the decentralization of network</Typography>
+    <Box
+      sx={{
+        mt: { xs: 3, md: 4 },
+        border: '1px solid rgba(255,255,255,0.1)',
+        borderRadius: { xs: '0.75rem', md: '1rem' },
+        backgroundColor: 'rgba(17, 17, 17, 0.35)',
+        backdropFilter: 'blur(12px)',
+        boxShadow:
+          '0 10px 40px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255,255,255,0.06)',
+        p: { xs: 1.5, md: 2.25 },
+      }}
+    >
+      <Typography variant='h1' sx={{ fontSize: { xs: '1.25rem', md: '1.5rem' } }}>
+        Epoch validators
+      </Typography>
+      <Typography sx={{ mt: 1, mb: 2, color: 'rgba(255,255,255,0.6)' }}>
+        Validator pools for this epoch (quorum members are highlighted).
+      </Typography>
 
-      <Box sx={{ mt: 4 }}>
+      <Box
+        sx={{
+          mt: 2,
+          border: '1px solid rgba(255,255,255,0.10)',
+          borderRadius: { xs: '0.75rem', md: '1rem' },
+          backgroundColor: 'rgba(0,0,0,0.55)',
+          backdropFilter: 'blur(12px)',
+          boxShadow:
+            '0 10px 40px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06)',
+          p: { xs: 1, md: 1.5 },
+        }}
+      >
         {validatorsData.length ? (
-          <VadlidatorsTable value={validatorsData} />
+          <VadlidatorsTable value={validatorsData} variant="glass" dense />
         ) : (
           <Typography color='primary.main'>No validators found</Typography>
         )}
       </Box>
-    </>
+    </Box>
   );
 }
 

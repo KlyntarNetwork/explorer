@@ -1,15 +1,17 @@
 "use client";
 import { FC, ReactNode, useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Grid, Typography, IconButton, Fade, Tooltip } from "@mui/material";
+import { Box, Dialog, Grid, IconButton, Tooltip, Typography } from "@mui/material";
 import { Label } from "@/components/ui";
 import LaunchIcon from "@mui/icons-material/Launch";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import QrCodeIcon from "@mui/icons-material/QrCode";
+import CloseIcon from "@mui/icons-material/Close";
 import QRCodeStyling from "qr-code-styling";
 
 interface Props {
   children?: ReactNode;
+  dense?: boolean;
   header: {
     clipBoardValue?: string;
     title: string;
@@ -28,10 +30,11 @@ interface Props {
 
 export const EntityPageLayout: FC<Props> = ({
   children: entityImage,
+  dense = false,
   header,
   items,
 }) => {
-  const [isQrVisible, setIsQrVisible] = useState(false);
+  const [isQrOpen, setIsQrOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const copyToClipboard = () => {
@@ -44,9 +47,8 @@ export const EntityPageLayout: FC<Props> = ({
       .catch((err) => console.error("Failed to copy:", err));
   };
 
-  const toggleQrVisibility = () => {
-    setIsQrVisible((prev) => !prev);
-  };
+  const openQr = () => setIsQrOpen(true);
+  const closeQr = () => setIsQrOpen(false);
 
   const qrRef = useRef<HTMLDivElement>(null);
   const qrInstance = useRef<QRCodeStyling | null>(null);
@@ -56,8 +58,8 @@ export const EntityPageLayout: FC<Props> = ({
 
     if (!qrInstance.current) {
       qrInstance.current = new QRCodeStyling({
-        width: 150,
-        height: 150,
+        width: 220,
+        height: 220,
         type: "svg",
         data: header.clipBoardValue,
         dotsOptions: {
@@ -74,25 +76,54 @@ export const EntityPageLayout: FC<Props> = ({
       });
     }
 
-    if (isQrVisible && qrRef.current) {
-      qrRef.current.innerHTML = "";
-      qrInstance.current.append(qrRef.current);
-    }
-  }, [isQrVisible, header.clipBoardValue]);
+    // Dialog contents are portaled; ensure the ref is mounted before appending.
+    if (!isQrOpen) return;
+
+    let cancelled = false;
+    const tryAppend = () => {
+      if (cancelled) return;
+      if (!qrInstance.current) return;
+
+      // Keep data in sync when navigating between entities.
+      // @ts-expect-error - QRCodeStyling update typing isn't always included depending on build.
+      qrInstance.current.update?.({ data: header.clipBoardValue });
+
+      if (qrRef.current) {
+        qrRef.current.innerHTML = "";
+        qrInstance.current.append(qrRef.current);
+        return;
+      }
+
+      requestAnimationFrame(tryAppend);
+    };
+
+    tryAppend();
+    return () => {
+      cancelled = true;
+    };
+  }, [isQrOpen, header.clipBoardValue]);
 
   const layoutHeader = (
     <Grid item xs={12}>
       <Typography variant="caption">{header.title}</Typography>
       <Grid container alignItems="center" spacing={1}>
         <Grid item>
-          <Typography variant="h1" sx={{ my: 0.25, wordBreak: "break-all" }}>
+          <Typography
+            variant="h1"
+            sx={{
+              my: dense ? 0.15 : 0.25,
+              wordBreak: "break-all",
+              fontSize: dense ? { xs: '1.35rem', md: '1.6rem' } : undefined,
+              lineHeight: dense ? 1.15 : undefined,
+            }}
+          >
             {header.value}
           </Typography>
         </Grid>
 
         <Grid item sx={{ position: "relative" }}>
           <Tooltip title={copied ? "Copied!" : "Click to copy"} placement="top">
-            <IconButton onClick={copyToClipboard} size="small">
+            <IconButton onClick={copyToClipboard} size={dense ? "small" : "small"} sx={{ p: dense ? 0.5 : undefined }}>
               <ContentCopyIcon fontSize="small" />
             </IconButton>
           </Tooltip>
@@ -108,29 +139,10 @@ export const EntityPageLayout: FC<Props> = ({
           }}
         >
           <Tooltip title="View QR code" placement="top">
-            <IconButton onClick={toggleQrVisibility} size="small">
+            <IconButton onClick={openQr} size="small" sx={{ p: dense ? 0.5 : undefined }}>
               <QrCodeIcon fontSize="small" />
             </IconButton>
           </Tooltip>
-
-          <Fade in={isQrVisible}>
-            <span
-              style={{
-                position: "absolute",
-                left: "120%",
-                top: "50%",
-                transform: "translateY(-50%)",
-                background: "white",
-                padding: isQrVisible ? "8px" : 0,
-                borderRadius: "8px",
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-                zIndex: 10,
-                display: isQrVisible ? "block" : "none",
-              }}
-            >
-              <div ref={qrRef} />
-            </span>
-          </Fade>
         </Grid>
       </Grid>
 
@@ -205,28 +217,155 @@ export const EntityPageLayout: FC<Props> = ({
 
   if (withImage) {
     return (
-      <Grid container spacing={8}>
-        <Grid item order={{ xs: 2, lg: 1 }} xs={12} lg={8} xl={7}>
-          {innerLayout}
+      <>
+        <Grid container spacing={8}>
+          <Grid item order={{ xs: 2, lg: 1 }} xs={12} lg={8} xl={7}>
+            {innerLayout}
+          </Grid>
+
+          <Grid
+            item
+            order={{ xs: 1, lg: 2 }}
+            xs={12}
+            lg={4}
+            xl={5}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {entityImage}
+          </Grid>
         </Grid>
 
-        <Grid
-          item
-          order={{ xs: 1, lg: 2 }}
-          xs={12}
-          lg={4}
-          xl={5}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {entityImage}
-        </Grid>
-      </Grid>
+        <QrDialog
+          open={isQrOpen}
+          onClose={closeQr}
+          value={header.clipBoardValue || ""}
+          qrRef={qrRef}
+        />
+      </>
     );
   }
 
-  return innerLayout;
+  return (
+    <>
+      {innerLayout}
+      <QrDialog
+        open={isQrOpen}
+        onClose={closeQr}
+        value={header.clipBoardValue || ""}
+        qrRef={qrRef}
+      />
+    </>
+  );
 };
+
+function QrDialog({
+  open,
+  onClose,
+  value,
+  qrRef,
+}: {
+  open: boolean;
+  onClose: () => void;
+  value: string;
+  qrRef: React.RefObject<HTMLDivElement>;
+}) {
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      aria-labelledby="qr-dialog-title"
+      maxWidth="xs"
+      fullWidth
+      PaperProps={{
+        sx: {
+          background:
+            "linear-gradient(180deg, rgba(12,12,12,0.92) 0%, rgba(10,10,10,0.78) 100%)",
+          backdropFilter: "blur(16px)",
+          border: "1px solid rgba(255,255,255,0.10)",
+          borderRadius: { xs: "0.9rem", md: "1rem" },
+          boxShadow:
+            "0 18px 60px rgba(0,0,0,0.60), inset 0 1px 0 rgba(255,255,255,0.06)",
+          overflow: "hidden",
+        },
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          px: 2,
+          py: 1.5,
+          borderBottom: "1px solid rgba(255,255,255,0.08)",
+        }}
+      >
+        <Typography
+          id="qr-dialog-title"
+          sx={{
+            fontSize: { xs: "0.75rem", md: "0.8125rem" },
+            textTransform: "uppercase",
+            letterSpacing: "0.16em",
+            color: "rgba(255,255,255,0.72)",
+          }}
+        >
+          QR Code
+        </Typography>
+        <IconButton
+          onClick={onClose}
+          size="small"
+          sx={{
+            p: 0.75,
+            color: "rgba(255,255,255,0.7)",
+            border: "1px solid rgba(255,255,255,0.10)",
+            borderRadius: "10px",
+            "&:hover": {
+              color: "rgba(255,255,255,0.95)",
+              borderColor: "rgba(255,255,255,0.18)",
+              backgroundColor: "rgba(255,255,255,0.04)",
+            },
+          }}
+          aria-label="Close"
+        >
+          <CloseIcon fontSize="small" />
+        </IconButton>
+      </Box>
+
+      <Box sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <Box
+          sx={{
+            backgroundColor: "#fff",
+            borderRadius: "14px",
+            p: 1.5,
+            display: "grid",
+            placeItems: "center",
+            width: 260,
+            height: 260,
+            maxWidth: "100%",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.45)",
+            "& svg": {
+              display: "block",
+            },
+          }}
+        >
+          <div ref={qrRef} />
+        </Box>
+        <Typography
+          sx={{
+            mt: 1.25,
+            fontSize: "0.75rem",
+            color: "rgba(255,255,255,0.55)",
+            wordBreak: "break-all",
+            textAlign: "center",
+            width: "100%",
+          }}
+        >
+          {value}
+        </Typography>
+      </Box>
+    </Dialog>
+  );
+}

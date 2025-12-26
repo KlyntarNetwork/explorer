@@ -1,6 +1,7 @@
 import ContractPage from "./ContractPage";
 
 import { Metadata } from "next";
+import { GradientBackground, DimGradientBackground, PageContainer } from "@/components/ui";
 
 export const metadata: Metadata = {
   title: "Contract info",
@@ -13,5 +14,13 @@ interface Props {
 }
 
 export default function ContractByIdPage({ params }: Props) {
-  return <ContractPage params={params} />;
+  return (
+    <GradientBackground sx={{ backgroundColor: "#000" }}>
+      <DimGradientBackground>
+        <PageContainer sx={{ pt: { xs: 3, md: 4 }, pb: { xs: 5, md: 7 } }}>
+          <ContractPage params={params} />
+        </PageContainer>
+      </DimGradientBackground>
+    </GradientBackground>
+  );
 }

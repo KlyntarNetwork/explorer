@@ -1,10 +1,21 @@
 'use client';
+import { useEffect, useRef } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import { majorMonoDisplay } from '@/styles/theme';
 import { logUserAction } from '@/helpers';
 import { USER_ACTIONS } from '@/constants';
 
 export default function Error() {
+  const headingRef = useRef<HTMLHeadingElement | null>(null);
+
+  useEffect(() => {
+    // When an error boundary is shown, Next.js can preserve the current scroll position.
+    // Force the viewport to the top so the user sees the error immediately.
+    window.scrollTo({ top: 0, left: 0 });
+    // Move focus to the top heading for accessibility and to avoid "footer focus" feeling.
+    headingRef.current?.focus();
+  }, []);
+
   const handleReload = () => {
     logUserAction(USER_ACTIONS.RETRY_ON_ERROR);
     setTimeout(() => {
@@ -59,6 +70,9 @@ export default function Error() {
       >
         <Typography
           variant="h1"
+          component="h1"
+          tabIndex={-1}
+          ref={headingRef}
           sx={{
             mb: 2,
             fontFamily: majorMonoDisplay.style.fontFamily,
@@ -67,6 +81,7 @@ export default function Error() {
             fontWeight: 300,
             letterSpacing: '-0.02em',
             lineHeight: 1,
+            outline: 'none',
           }}
         >
           500

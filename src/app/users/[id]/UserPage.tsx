@@ -7,15 +7,13 @@ import {
   ContentBlock,
   EntityPageLayout,
   Label,
-  PageContainer,
   TransactionsTable,
 } from "@/components/ui";
 import { fetchAccountById, fetchAccountTransactions } from "@/data";
 import { truncateMiddle } from "@/helpers";
 import { TransactionPreview, UserAccount } from "@/definitions";
-import AccountImage from "@public/icons/pages/account2.svg";
-import CoinIcon from "@public/icons/company/CoinIcon.svg";
 import Web3 from "web3";
+import { UserHero } from "./UserHero";
 
 interface Props {
   params: {
@@ -32,7 +30,9 @@ export default function UserPage({ params }: Props) {
 
   useEffect(() => {
     const fetchData = async () => {
-      let [shard, accountId] = decodeURIComponent(params.id).split(":");
+      const parts = decodeURIComponent(params.id).split(":");
+      let shard = parts.length >= 2 ? parts[0] : "0";
+      let accountId = parts.length >= 2 ? parts[1] : parts[0];
       accountId = accountId.startsWith("0x")
         ? accountId.toLowerCase()
         : accountId;
@@ -85,8 +85,20 @@ export default function UserPage({ params }: Props) {
   }
 
   return (
-    <PageContainer sx={{ py: 6 }}>
-      <EntityPageLayout
+    <>
+      <Box
+        sx={{
+          border: "1px solid rgba(255,255,255,0.1)",
+          borderRadius: { xs: "0.75rem", md: "1rem" },
+          backgroundColor: "rgba(17, 17, 17, 0.35)",
+          backdropFilter: "blur(12px)",
+          boxShadow:
+            "0 10px 40px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255,255,255,0.06)",
+          p: { xs: 1.5, md: 2.25 },
+        }}
+      >
+        <EntityPageLayout
+          dense
         header={{
           title: "Account info",
           clipBoardValue: accountId,
@@ -99,19 +111,65 @@ export default function UserPage({ params }: Props) {
         items={[
           <ContentBlock
             key="account_id"
-            title="Account Id:"
+            density="compact"
+            blurred
+            sx={{
+              border: "1px solid rgba(255,255,255,0.08)",
+              borderRadius: { xs: "0.75rem", md: "1rem" },
+              backgroundColor: "rgba(0,0,0,0.55)",
+              boxShadow:
+                "0 6px 24px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)",
+            }}
+            title="Account Id"
             value={accountId}
           />,
-          <ContentBlock key="aliases" title="Also known as:">
+          <ContentBlock
+            key="aliases"
+            density="compact"
+            blurred
+            sx={{
+              border: "1px solid rgba(255,255,255,0.08)",
+              borderRadius: { xs: "0.75rem", md: "1rem" },
+              backgroundColor: "rgba(0,0,0,0.55)",
+              boxShadow:
+                "0 6px 24px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)",
+            }}
+            title="Also known as"
+          >
             <Label variant="blue">N/A</Label>
           </ContentBlock>,
           [
-            <ContentBlock key="shard" title="Shard:" value={shard} />,
-            <ContentBlock key="balance" title="Balance:">
+            <ContentBlock
+              key="shard"
+              density="compact"
+              blurred
+              sx={{
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: { xs: "0.75rem", md: "1rem" },
+                backgroundColor: "rgba(0,0,0,0.55)",
+                boxShadow:
+                  "0 6px 24px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)",
+              }}
+              title="Shard"
+              value={shard}
+            />,
+            <ContentBlock
+              key="balance"
+              density="compact"
+              blurred
+              sx={{
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: { xs: "0.75rem", md: "1rem" },
+                backgroundColor: "rgba(0,0,0,0.55)",
+                boxShadow:
+                  "0 6px 24px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)",
+              }}
+              title="Balance"
+            >
               <Typography
                 sx={{
-                  fontSize: "24px",
-                  lineHeight: "30px",
+                  fontSize: { xs: "0.95rem", md: "1.05rem" },
+                  lineHeight: 1.25,
                   fontWeight: 300,
                   display: "flex",
                   alignItems: "center",
@@ -120,25 +178,47 @@ export default function UserPage({ params }: Props) {
                 color="primary.main"
               >
                 {Web3.utils.fromWei(account.balance, "ether")}
-                <CoinIcon/>
               </Typography>
             </ContentBlock>,
           ],
           [
-            <ContentBlock key="nonce" title="Nonce:" value={account.nonce} />,
+            <ContentBlock
+              key="nonce"
+              density="compact"
+              blurred
+              sx={{
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: { xs: "0.75rem", md: "1rem" },
+                backgroundColor: "rgba(0,0,0,0.55)",
+                boxShadow:
+                  "0 6px 24px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)",
+              }}
+              title="Nonce"
+              value={account.nonce}
+            />,
             <ContentBlock
               key="abstract_gas"
-              title="Abstract gas:"
+              density="compact"
+              blurred
+              sx={{
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: { xs: "0.75rem", md: "1rem" },
+                backgroundColor: "rgba(0,0,0,0.55)",
+                boxShadow:
+                  "0 6px 24px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)",
+              }}
+              title="Abstract gas"
               value={account.gas}
             />,
           ],
         ]}
       >
-        <AccountImage/>
+        <UserHero />
       </EntityPageLayout>
+      </Box>
 
       <TabSection transactions={transactions} />
-    </PageContainer>
+    </>
   );
 }
 
@@ -146,9 +226,39 @@ function TabSection({ transactions }: { transactions: TransactionPreview[] }) {
   const [activeTab, setActiveTab] = useState(0);
 
   return (
-    <Box sx={{ mt: 10, whiteSpace: "nowrap" }}>
+    <Box
+      sx={{
+        mt: { xs: 3, md: 4 },
+        border: "1px solid rgba(255,255,255,0.1)",
+        borderRadius: { xs: "0.75rem", md: "1rem" },
+        backgroundColor: "rgba(17, 17, 17, 0.35)",
+        backdropFilter: "blur(12px)",
+        boxShadow:
+          "0 10px 40px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255,255,255,0.06)",
+        p: { xs: 1.5, md: 2.25 },
+      }}
+    >
       <Tabs
-        sx={{ mb: 10 }}
+        sx={{
+          mb: { xs: 2, md: 2.5 },
+          borderBottom: "1px solid rgba(255,255,255,0.08)",
+          "& .MuiTab-root": {
+            color: "rgba(255,255,255,0.65)",
+            textTransform: "uppercase",
+            letterSpacing: "0.14em",
+            fontSize: { xs: "0.6875rem", md: "0.75rem" },
+            minHeight: 44,
+            py: 1.25,
+          },
+          "& .Mui-selected": {
+            color: "rgba(255,255,255,0.92)",
+          },
+          "& .MuiTabs-indicator": {
+            height: "2px",
+            background:
+              "linear-gradient(90deg, rgba(122,238,229,0.9) 0%, rgba(255,49,49,0.65) 100%)",
+          },
+        }}
         value={activeTab}
         onChange={(_, newIndex) => setActiveTab(newIndex)}
         variant="scrollable"
@@ -163,11 +273,13 @@ function TabSection({ transactions }: { transactions: TransactionPreview[] }) {
 
       {activeTab === 0 && (
         <>
-          <Typography variant="h1">Transactions</Typography>
-          <Typography sx={{ mt: 1, mb: 3 }}>
+          <Typography variant="h1" sx={{ fontSize: { xs: "1.25rem", md: "1.5rem" } }}>
+            Transactions
+          </Typography>
+          <Typography sx={{ mt: 1, mb: 2, color: "rgba(255,255,255,0.6)" }}>
             Browse through the latest 200 transactions below
           </Typography>
-          <TransactionsTable transactions={transactions.reverse()} />
+          <TransactionsTable transactions={transactions.reverse()} variant="glass" dense />
         </>
       )}
       {activeTab === 1 && (

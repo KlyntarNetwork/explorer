@@ -15,19 +15,20 @@ import Link from 'next/link';
 import { BlockPreview } from '@/definitions';
 import { FlexCenterBox, ButtonPagination } from '@/components/ui';
 import { fetchBlocksByShard } from '@/data';
-import { BLOCKS_PER_PAGE } from '@/constants';
 import { truncateMiddle } from '@/helpers';
 
 interface LatestBlocksTableProps {
   shard: string;
   currentPage: number;
+  rowsPerPage: number;
 }
 
 export const LatestBlocksTable: FC<LatestBlocksTableProps> = async ({
   shard,
-  currentPage
+  currentPage,
+  rowsPerPage,
 }) => {
-  const blocks = await fetchBlocksByShard(shard, currentPage);
+  const blocks = await fetchBlocksByShard(shard, currentPage, rowsPerPage);
   const blocksExist = !!blocks.length;
 
   const rows = blocks.map((block: BlockPreview) => (
@@ -38,22 +39,24 @@ export const LatestBlocksTable: FC<LatestBlocksTableProps> = async ({
           passHref
           style={{ textDecoration: 'none' }}
         >
-          <Typography color='primary.main' sx={{ fontSize: '16px' }}>
-            <LaunchIcon color='primary' sx={{ position: 'relative', bottom: '-4px', height: '20px' }} /> {block.sid}
+          <Typography color='primary.main' sx={{ fontSize: { xs: '0.8125rem', md: '0.875rem' } }}>
+            <LaunchIcon color='primary' sx={{ position: 'relative', bottom: '-3px', height: '18px' }} /> {block.sid}
           </Typography>
         </Link>
       </TableCell>
       <TableCell sx={{ width: '20%' }}>
-        <Typography sx={{ fontSize: '16px' }}>{truncateMiddle(block.creator)}</Typography>
+        <Typography sx={{ fontSize: { xs: '0.8125rem', md: '0.875rem' } }}>
+          {truncateMiddle(block.creator)}
+        </Typography>
       </TableCell>
       <TableCell sx={{ width: '20%' }}>
-        <Typography sx={{ fontSize: '16px' }}>{block.index}</Typography>
+        <Typography sx={{ fontSize: { xs: '0.8125rem', md: '0.875rem' } }}>{block.index}</Typography>
       </TableCell>
       <TableCell sx={{ width: '20%' }}>
-        <Typography sx={{ fontSize: '16px' }}>{block.txsNumber}</Typography>
+        <Typography sx={{ fontSize: { xs: '0.8125rem', md: '0.875rem' } }}>{block.txsNumber}</Typography>
       </TableCell>
       <TableCell sx={{ width: '20%' }}>
-        <Typography sx={{ fontSize: '16px' }}>{block.createdAt}</Typography>
+        <Typography sx={{ fontSize: { xs: '0.8125rem', md: '0.875rem' } }}>{block.createdAt}</Typography>
       </TableCell>
     </TableRow>
   ));
@@ -68,28 +71,71 @@ export const LatestBlocksTable: FC<LatestBlocksTableProps> = async ({
 
   return (
     <>
-      <TableContainer sx={{ mt: 5 }}>
-        <Table sx={{ minWidth: 650 }} aria-label='Latest blocks table'>
+      <TableContainer
+        sx={{
+          mt: { xs: 3, md: 4 },
+          border: '1px solid rgba(255,255,255,0.10)',
+          borderRadius: { xs: '0.75rem', md: '1rem' },
+          backgroundColor: 'rgba(0,0,0,0.55)',
+          backdropFilter: 'blur(12px)',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06)',
+          overflow: 'hidden',
+        }}
+      >
+        <Table
+          sx={{
+            minWidth: 650,
+            '& th, & td': {
+              borderBottom: '1px solid rgba(255,255,255,0.06)',
+            },
+          }}
+          aria-label='Latest blocks table'
+        >
           <TableHead>
-            <TableRow>
-              <TableCell>
-                <Tooltip title='Absolute height of block in shard'><Typography variant='h6'>SID</Typography></Tooltip>
-              </TableCell>
-              <TableCell>
-                <Tooltip title='Address of the block creator'><Typography variant='h6'>Creator</Typography></Tooltip>
-              </TableCell>
-              <TableCell>
-                <Tooltip title='Index of block in current epoch by this creator'><Typography variant='h6'>Index</Typography></Tooltip>
-              </TableCell>
-              <TableCell>
-                <Tooltip title='Number of transactions in the block'><Typography variant='h6'>Txs Number</Typography></Tooltip>
-              </TableCell>
-              <TableCell>
-                <Tooltip title='Timestamp when the block was created'><Typography variant='h6'>Created at</Typography></Tooltip>
-              </TableCell>
+            <TableRow
+              sx={{
+                background:
+                  'linear-gradient(90deg, rgba(122,238,229,0.06) 0%, rgba(255,49,49,0.04) 100%)',
+              }}
+            >
+              {[
+                { label: 'SID', tip: 'Absolute height of block in shard' },
+                { label: 'Creator', tip: 'Address of the block creator' },
+                { label: 'Index', tip: 'Index of block in current epoch by this creator' },
+                { label: 'Txs', tip: 'Number of transactions in the block' },
+                { label: 'Created', tip: 'Timestamp when the block was created' },
+              ].map(({ label, tip }) => (
+                <TableCell key={label} sx={{ py: 1.5 }}>
+                  <Tooltip title={tip}>
+                    <Typography
+                      sx={{
+                        fontSize: { xs: '0.6875rem', md: '0.75rem' },
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.14em',
+                        color: 'rgba(255,255,255,0.65)',
+                        fontWeight: 500,
+                      }}
+                    >
+                      {label}
+                    </Typography>
+                  </Tooltip>
+                </TableCell>
+              ))}
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody
+            sx={{
+              '& .MuiTableRow-root': {
+                transition: 'background-color 160ms ease',
+              },
+              '& .MuiTableRow-root:hover': {
+                backgroundColor: 'rgba(255,255,255,0.03)',
+              },
+              '& .MuiTableCell-root': {
+                py: 1.35,
+              },
+            }}
+          >
             {rows}
           </TableBody>
         </Table>
@@ -97,7 +143,7 @@ export const LatestBlocksTable: FC<LatestBlocksTableProps> = async ({
 
       <FlexCenterBox sx={{ my: 5 }}>
         <ButtonPagination
-          disabled={blocks.length < BLOCKS_PER_PAGE}
+          disabled={blocks.length < rowsPerPage}
         />
       </FlexCenterBox>
     </>

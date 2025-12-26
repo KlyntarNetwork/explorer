@@ -71,32 +71,95 @@ export async function fetchBlockchainData(): Promise<BlockchainData> {
       }
     };
   } catch (e: any) {
+    // In development, allow pages to render with stubbed values when node/API is unavailable
+    if (process.env.NODE_ENV !== 'production') {
+      return defaultData;
+    }
     throw new Error(`Failed to fetch blockchain data - ${e.message}`);
   }
 }
 
 export async function fetchTotalBlocksAndTxsByEpoch(id: number | string): Promise<BlockStats> {
+  const mockForEpoch = (epochId: number): BlockStats => {
+    const baseBlocks = 95_000;
+    const baseTxs = 2_400_000;
+    const blocks = baseBlocks + (epochId % 200) * 420;
+    const txs = baseTxs + (epochId % 200) * 38_000;
+    const success = Math.floor(txs * (0.965 + ((epochId % 7) * 0.002)));
+
+    return {
+      totalBlocksNumber: blocks,
+      totalTxsNumber: txs,
+      successfulTxsNumber: Math.min(success, txs),
+      // keep same shape as API
+      // @ts-expect-error: declared as literal 'string' in definitions
+      totalKlyStaked: '45807498008',
+    };
+  };
+
+  if (process.env.STUB_MODE) {
+    return mockForEpoch(Number(id));
+  }
+
   try {
     return await api.get<BlockStats>(API_ROUTES.STATS.VERIFICATION_THREAD_STATS_PER_EPOCH(Number(id)));
   } catch (e: any) {
+    if (process.env.NODE_ENV !== 'production') {
+      return mockForEpoch(Number(id));
+    }
     throw new Error(`Failed to fetch total blocks and txs by epoch ID "${id}" - ${e.message}`);
   }
 }
 
 export async function fetchRecentTotalBlocksAndTxs(limit: number): Promise<RecentBlockStats> {
+  const mockRecentStats = (): RecentBlockStats => {
+    // deterministic mock: last N epochs with increasing tx count
+    const stats: RecentBlockStats = {};
+    const baseEpoch = 1200;
+    for (let i = 0; i < limit; i++) {
+      const epochId = String(baseEpoch + i);
+      stats[epochId] = {
+        totalBlocksNumber: 120_000 + i * 1_250,
+        totalTxsNumber: 3_000_000 + i * 120_000,
+        successfulTxsNumber: 2_940_000 + i * 118_000,
+        // keep the same shape as in API even if it's not used by this chart
+        // @ts-expect-error: type in definitions is currently declared as literal 'string'
+        totalKlyStaked: '45807498008',
+      };
+    }
+    return stats;
+  };
+
+  if (process.env.STUB_MODE) {
+    return mockRecentStats();
+  }
+
   try {
     return await api.get<RecentBlockStats>(API_ROUTES.STATS.RECENT_VERIFICATION_THREAD_STATS_PER_EPOCH(limit));
   } catch (e: any) {
+    // If node/API is unavailable in development, fall back to mocks so pages can be redesigned
+    if (process.env.NODE_ENV !== 'production') {
+      return mockRecentStats();
+    }
     throw new Error(`Failed to fetch recent total blocks and txs - ${e.message}`);
   }
 }
 
 export async function fetchCurrentShards(): Promise<string[]> {
+  const mockShards = () => ['0', '1', '2', '3'];
+
+  if (process.env.STUB_MODE) {
+    return mockShards();
+  }
+
   try {
     const currentShardsData = await api.get<ShardsData>(API_ROUTES.CHAIN.CURRENT_SHARDS_LEADERS);
 
     return Object.keys(currentShardsData);
   } catch (e: any) {
+    if (process.env.NODE_ENV !== 'production') {
+      return mockShards();
+    }
     throw new Error(`Failed to fetch current shards - ${e.message}`);
   }
 }
