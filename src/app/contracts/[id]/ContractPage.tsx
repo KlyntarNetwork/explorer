@@ -21,9 +21,10 @@ interface Props {
   params: {
     id: string;
   };
+  forceEntityStub?: boolean;
 }
 
-export default function ContractPage({ params }: Props) {
+export default function ContractPage({ params, forceEntityStub }: Props) {
   const [contract, setContract] = useState<ContractAccount | null>(null);
   const [transactions, setTransactions] = useState<TransactionPreview[]>([]);
   const [loading, setLoading] = useState(true);
@@ -61,11 +62,8 @@ export default function ContractPage({ params }: Props) {
       setSystemContractUI(systemContractUI);
 
       try {
-        const contractData = await fetchAccountById(shardId, contractId);
-        const transactionsData = await fetchAccountTransactions(
-          shardId,
-          contractId
-        );
+        const contractData = await fetchAccountById(shardId, contractId, { forceStub: forceEntityStub });
+        const transactionsData = await fetchAccountTransactions(shardId, contractId, { forceStub: forceEntityStub });
         // In dev/stub mode we might not be able to classify accounts reliably.
         // If the user navigates to /contracts, prefer showing the contract UI instead of 404.
         const asAny = contractData as any;

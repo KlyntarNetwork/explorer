@@ -1,18 +1,20 @@
 import api from '@/helpers/api';
 import { API_ROUTES } from '@/constants/api';
 import { UserAccount, ContractAccount } from '@/definitions';
+import { isEntityStubMode } from '@/config/stubMode';
 
-export async function fetchAccountById(shard: string, id: string): Promise<UserAccount|ContractAccount> {
-  if (process.env.STUB_MODE) {
+export async function fetchAccountById(
+  shard: string,
+  id: string,
+  opts?: { forceStub?: boolean }
+): Promise<UserAccount|ContractAccount> {
+  if (opts?.forceStub || isEntityStubMode()) {
     return mockAccountById(shard, id);
   }
 
   try {
     return await api.get<UserAccount|ContractAccount>(API_ROUTES.ACCOUNTS.ACCOUNT_BY_ID(shard, id));
   } catch (e: any) {
-    if (process.env.NODE_ENV !== 'production') {
-      return mockAccountById(shard, id);
-    }
     throw new Error(`Failed to fetch account by id "${id}" in shard "${shard}" - ${e.message}`);
   }
 }

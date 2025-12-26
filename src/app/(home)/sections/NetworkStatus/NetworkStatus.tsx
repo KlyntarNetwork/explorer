@@ -133,7 +133,6 @@ export const NetworkStatus:FC<Props> = ({ data }) => {
             url={item.url}
             Icon={item.icon}
             size={item.size}
-            disabled={item.url === '/coming-soon'}
           />
         ))}
       </Box>
@@ -146,8 +145,7 @@ const InfoCard: FC<{
   url: string; 
   Icon: React.ComponentType<any>; 
   size: 'small' | 'medium' | 'large';
-  disabled?: boolean;
-}> = ({ title, url, Icon, size, disabled }) => {
+}> = ({ title, url, Icon, size }) => {
   const getGridSpan = (size: 'small' | 'medium' | 'large', title: string) => {
     if (title === 'Charts') {
       return { xs: 'span 2', md: 'span 4' };
@@ -166,12 +164,8 @@ const InfoCard: FC<{
   return (
     <Box
       component={Link}
-      href={disabled ? '#' : url}
+      href={url}
       onClick={(e) => {
-        if (disabled) {
-          e.preventDefault();
-          return;
-        }
         logUserAction(USER_ACTIONS.VISIT_PAGE, { url, location: LOCATION.HOME_PAGE });
       }}
       sx={{
@@ -187,7 +181,7 @@ const InfoCard: FC<{
         justifyContent: 'center',
         gap: { xs: '0.5rem', md: '0.625rem' },
         textDecoration: 'none',
-        color: disabled ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.7)',
+        color: 'rgba(255,255,255,0.7)',
         boxShadow: '0 2px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.03)',
         transition: 'border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease, color 0.3s ease',
         position: 'relative',
@@ -228,21 +222,19 @@ const InfoCard: FC<{
           },
         },
         '&:hover': {
-          borderColor: disabled ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.2)',
-          backgroundColor: disabled ? 'rgba(17, 17, 17, 0.3)' : 'rgba(17, 17, 17, 0.5)',
-          color: disabled ? 'rgba(255,255,255,0.4)' : '#fff',
-          transform: disabled ? 'none' : 'translateY(-2px)',
-          boxShadow: disabled 
-            ? '0 2px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.03)' 
-            : '0 4px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(122, 238, 229, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+          borderColor: 'rgba(255,255,255,0.2)',
+          backgroundColor: 'rgba(17, 17, 17, 0.5)',
+          color: '#fff',
+          transform: 'translateY(-2px)',
+          boxShadow:
+            '0 4px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(122, 238, 229, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
         },
       }}
-      aria-disabled={disabled}
     >
       <Icon 
         sx={{ 
           fontSize: { xs: size === 'large' ? '2rem' : size === 'medium' ? '1.5rem' : '1.25rem', md: size === 'large' ? '2.5rem' : size === 'medium' ? '1.75rem' : '1.5rem' },
-          opacity: disabled ? 0.4 : 0.7,
+          opacity: 0.7,
           transition: 'opacity 0.3s ease, transform 0.3s ease',
         }} 
       />

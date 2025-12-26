@@ -3,9 +3,10 @@ import { API_ROUTES } from '@/constants/api';
 import { Epoch, EpochExtendedData } from '@/definitions';
 import { fetchTotalBlocksAndTxsByEpoch } from './blockchain';
 import { getInfoFromEpoch, getTxSuccessRate } from './utils';
+import { isEntityStubMode } from '@/config/stubMode';
 
 export async function fetchEpochById(id: number): Promise<EpochExtendedData> {
-  if (process.env.STUB_MODE) {
+  if (isEntityStubMode()) {
     return mockEpochById(id);
   }
 
@@ -37,24 +38,18 @@ export async function fetchEpochById(id: number): Promise<EpochExtendedData> {
       txsSuccessRate
     }
   } catch (e: any) {
-    if (process.env.NODE_ENV !== 'production') {
-      return mockEpochById(id);
-    }
     throw new Error(`Failed to fetch epoch by id "${id}" - ${e.message}`);
   }
 }
 
 export async function fetchCurrentEpoch(): Promise<Epoch> {
-  if (process.env.STUB_MODE) {
+  if (isEntityStubMode()) {
     return mockEpochById(128);
   }
 
   try {
     return await api.get<Epoch>(API_ROUTES.EPOCH.CURRENT_EPOCH_AT);
   } catch (e: any) {
-    if (process.env.NODE_ENV !== 'production') {
-      return mockEpochById(128);
-    }
     throw new Error(`Failed to fetch current epoch - ${e.message}`);
   }
 }
@@ -91,7 +86,6 @@ function mockEpochById(id: number): EpochExtendedData {
     totalBlocksNumber: 95_000 + (epochId % 200) * 420,
     totalTxsNumber: 2_400_000 + (epochId % 200) * 38_000,
     successfulTxsNumber: 2_320_000 + (epochId % 200) * 36_000,
-    // @ts-expect-error: declared as literal 'string'
     totalKlyStaked: '45807498008',
   };
   const txsSuccessRate = getTxSuccessRate(totalBlocksAndTxsData as any);

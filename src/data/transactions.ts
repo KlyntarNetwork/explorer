@@ -8,9 +8,10 @@ import {
   TX_TYPE
 } from '@/definitions';
 import { fetchBlockById } from './blocks';
+import { isEntityStubMode } from '@/config/stubMode';
 
 export async function fetchTransactionByTxHash(hash: string): Promise<TransactionExtendedView> {
-  if (process.env.STUB_MODE) {
+  if (isEntityStubMode()) {
     return mockTransactionByHash(hash);
   }
 
@@ -29,24 +30,22 @@ export async function fetchTransactionByTxHash(hash: string): Promise<Transactio
       creatorFormatDescription: describeTransactionCreatorFormat(transaction.creator)
     }
   } catch (e: any) {
-    if (process.env.NODE_ENV !== 'production') {
-      return mockTransactionByHash(hash);
-    }
     throw new Error(`Failed to fetch transaction by hash "${hash}" - ${e.message}`);
   }
 }
 
-export async function fetchAccountTransactions(shard: string, accountId: string): Promise<TransactionPreview[]> {
-  if (process.env.STUB_MODE) {
+export async function fetchAccountTransactions(
+  shard: string,
+  accountId: string,
+  opts?: { forceStub?: boolean }
+): Promise<TransactionPreview[]> {
+  if (opts?.forceStub || isEntityStubMode()) {
     return mockAccountTransactions(shard, accountId);
   }
 
   try {
     return await api.get<TransactionPreview[]>(API_ROUTES.TRANSACTIONS.ACCOUNT_TRANSACTIONS(shard, accountId));
   } catch (e: any) {
-    if (process.env.NODE_ENV !== 'production') {
-      return mockAccountTransactions(shard, accountId);
-    }
     throw new Error(`Failed to fetch transactions by account id "${accountId}" in shard "${shard}" - ${e.message}`);
   }
 }

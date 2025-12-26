@@ -2,6 +2,7 @@ import UserPage from "./UserPage";
 
 import { Metadata } from "next";
 import { GradientBackground, DimGradientBackground, PageContainer } from "@/components/ui";
+import { isEntityStubMode } from "@/config/stubMode";
 
 export const metadata: Metadata = {
   title: "User info",
@@ -14,11 +15,12 @@ interface Props {
 }
 
 export default function AccountByIdPage({ params }: Props) {
+  const forceEntityStub = isEntityStubMode();
   return (
     <GradientBackground sx={{ backgroundColor: "#000" }}>
       <DimGradientBackground>
         <PageContainer sx={{ pt: { xs: 3, md: 4 }, pb: { xs: 5, md: 7 } }}>
-          <UserPage params={params} />
+          <UserPage params={params} forceEntityStub={forceEntityStub} />
         </PageContainer>
       </DimGradientBackground>
     </GradientBackground>

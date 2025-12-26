@@ -12,6 +12,7 @@ import {
 } from '@/definitions';
 import { BLOCKS_PER_PAGE } from '@/constants';
 import { API_ROUTES } from '@/constants/api';
+import { isEntityStubMode } from '@/config/stubMode';
 
 export async function fetchBlocksByShard(
   shard: string,
@@ -21,7 +22,7 @@ export async function fetchBlocksByShard(
   const effectiveShard = shard || '0';
   const perPage = Math.min(100, Math.max(10, rowsPerPage || BLOCKS_PER_PAGE));
 
-  if (process.env.STUB_MODE) {
+  if (isEntityStubMode()) {
     return mockBlocksByShard(effectiveShard, currentPage, perPage);
   }
 
@@ -54,15 +55,12 @@ export async function fetchBlocksByShard(
       }
     });
   } catch (e: any) {
-    if (process.env.NODE_ENV !== 'production') {
-      return mockBlocksByShard(effectiveShard, currentPage, perPage);
-    }
     throw new Error(`Failed to fetch blocks by shard "${effectiveShard}" - ${e.message}`);
   }
 }
 
 export async function fetchBlockById(id: string): Promise<BlockExtendedView> {
-  if (process.env.STUB_MODE) {
+  if (isEntityStubMode()) {
     return mockBlockById(id);
   }
 
@@ -109,9 +107,6 @@ export async function fetchBlockById(id: string): Promise<BlockExtendedView> {
       aggregatedFinalizationProof
     };
   } catch (e: any) {
-    if (process.env.NODE_ENV !== 'production') {
-      return mockBlockById(id);
-    }
     throw new Error(`Failed to fetch block by ID "${id}" - ${e.message}`);
   }
 }
@@ -119,7 +114,7 @@ export async function fetchBlockById(id: string): Promise<BlockExtendedView> {
 export async function fetchAggregatedFinalizationProof(id: string): Promise<AggregatedFinalizationProof> {
   let blockId = id;
 
-  if (process.env.STUB_MODE) {
+  if (isEntityStubMode()) {
     return mockAggregatedFinalizationProof(blockId);
   }
 
@@ -135,9 +130,6 @@ export async function fetchAggregatedFinalizationProof(id: string): Promise<Aggr
 
     return await api.get(API_ROUTES.BLOCKS.AGGREGATED_FINALIZATION_PROOF(blockId));
   } catch (e: any) {
-    if (process.env.NODE_ENV !== 'production') {
-      return mockAggregatedFinalizationProof(blockId);
-    }
     throw new Error(`Failed to fetch aggregated finalization proof by block ID "${blockId}" - ${e.message}`);
   }
 }

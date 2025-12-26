@@ -85,8 +85,7 @@ export const EntityPageLayout: FC<Props> = ({
       if (!qrInstance.current) return;
 
       // Keep data in sync when navigating between entities.
-      // @ts-expect-error - QRCodeStyling update typing isn't always included depending on build.
-      qrInstance.current.update?.({ data: header.clipBoardValue });
+      (qrInstance.current as any).update?.({ data: header.clipBoardValue });
 
       if (qrRef.current) {
         qrRef.current.innerHTML = "";

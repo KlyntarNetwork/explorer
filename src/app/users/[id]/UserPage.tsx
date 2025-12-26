@@ -19,9 +19,10 @@ interface Props {
   params: {
     id: string;
   };
+  forceEntityStub?: boolean;
 }
 
-export default function UserPage({ params }: Props) {
+export default function UserPage({ params, forceEntityStub }: Props) {
   const [account, setAccount] = useState<UserAccount | null>(null);
   const [transactions, setTransactions] = useState<TransactionPreview[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,11 +41,8 @@ export default function UserPage({ params }: Props) {
       setAccountId(accountId);
 
       try {
-        const accountData = await fetchAccountById(shard, accountId);
-        const transactionsData = await fetchAccountTransactions(
-          shard,
-          accountId
-        );
+        const accountData = await fetchAccountById(shard, accountId, { forceStub: forceEntityStub });
+        const transactionsData = await fetchAccountTransactions(shard, accountId, { forceStub: forceEntityStub });
         setAccount(accountData as UserAccount);
         setTransactions(transactionsData);
       } catch (error) {

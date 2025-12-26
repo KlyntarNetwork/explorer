@@ -4,6 +4,7 @@ import { BlockStats, ChainInfo, ShardsData, BlockchainData, RecentBlockStats } f
 import { API_ROUTES } from '@/constants/api';
 import { fetchCurrentEpoch } from '@/data/epochs';
 import { getInfoFromEpoch, getTxSuccessRate } from './utils';
+import { isEntityStubMode, isGlobalStubMode } from '@/config/stubMode';
 
 export async function fetchBlockchainData(): Promise<BlockchainData> {
 
@@ -30,7 +31,7 @@ export async function fetchBlockchainData(): Promise<BlockchainData> {
     }
   }
 
-  if(process.env.STUB_MODE){
+  if (isGlobalStubMode()) {
     return defaultData;
   }
 
@@ -71,10 +72,6 @@ export async function fetchBlockchainData(): Promise<BlockchainData> {
       }
     };
   } catch (e: any) {
-    // In development, allow pages to render with stubbed values when node/API is unavailable
-    if (process.env.NODE_ENV !== 'production') {
-      return defaultData;
-    }
     throw new Error(`Failed to fetch blockchain data - ${e.message}`);
   }
 }
@@ -97,16 +94,13 @@ export async function fetchTotalBlocksAndTxsByEpoch(id: number | string): Promis
     };
   };
 
-  if (process.env.STUB_MODE) {
+  if (isEntityStubMode()) {
     return mockForEpoch(Number(id));
   }
 
   try {
     return await api.get<BlockStats>(API_ROUTES.STATS.VERIFICATION_THREAD_STATS_PER_EPOCH(Number(id)));
   } catch (e: any) {
-    if (process.env.NODE_ENV !== 'production') {
-      return mockForEpoch(Number(id));
-    }
     throw new Error(`Failed to fetch total blocks and txs by epoch ID "${id}" - ${e.message}`);
   }
 }
@@ -130,17 +124,13 @@ export async function fetchRecentTotalBlocksAndTxs(limit: number): Promise<Recen
     return stats;
   };
 
-  if (process.env.STUB_MODE) {
+  if (isEntityStubMode()) {
     return mockRecentStats();
   }
 
   try {
     return await api.get<RecentBlockStats>(API_ROUTES.STATS.RECENT_VERIFICATION_THREAD_STATS_PER_EPOCH(limit));
   } catch (e: any) {
-    // If node/API is unavailable in development, fall back to mocks so pages can be redesigned
-    if (process.env.NODE_ENV !== 'production') {
-      return mockRecentStats();
-    }
     throw new Error(`Failed to fetch recent total blocks and txs - ${e.message}`);
   }
 }
@@ -148,7 +138,7 @@ export async function fetchRecentTotalBlocksAndTxs(limit: number): Promise<Recen
 export async function fetchCurrentShards(): Promise<string[]> {
   const mockShards = () => ['0', '1', '2', '3'];
 
-  if (process.env.STUB_MODE) {
+  if (isEntityStubMode()) {
     return mockShards();
   }
 
@@ -157,9 +147,6 @@ export async function fetchCurrentShards(): Promise<string[]> {
 
     return Object.keys(currentShardsData);
   } catch (e: any) {
-    if (process.env.NODE_ENV !== 'production') {
-      return mockShards();
-    }
     throw new Error(`Failed to fetch current shards - ${e.message}`);
   }
 }
