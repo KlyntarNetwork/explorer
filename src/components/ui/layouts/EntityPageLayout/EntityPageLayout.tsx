@@ -241,7 +241,6 @@ export const EntityPageLayout: FC<Props> = ({
         <QrDialog
           open={isQrOpen}
           onClose={closeQr}
-          value={header.clipBoardValue || ""}
           qrRef={qrRef}
         />
       </>
@@ -254,7 +253,6 @@ export const EntityPageLayout: FC<Props> = ({
       <QrDialog
         open={isQrOpen}
         onClose={closeQr}
-        value={header.clipBoardValue || ""}
         qrRef={qrRef}
       />
     </>
@@ -264,12 +262,10 @@ export const EntityPageLayout: FC<Props> = ({
 function QrDialog({
   open,
   onClose,
-  value,
   qrRef,
 }: {
   open: boolean;
   onClose: () => void;
-  value: string;
   qrRef: React.RefObject<HTMLDivElement>;
 }) {
   return (
@@ -357,12 +353,11 @@ function QrDialog({
             mt: 1.25,
             fontSize: "0.75rem",
             color: "rgba(255,255,255,0.55)",
-            wordBreak: "break-all",
             textAlign: "center",
             width: "100%",
           }}
         >
-          {value}
+          Scan QR code
         </Typography>
       </Box>
     </Dialog>

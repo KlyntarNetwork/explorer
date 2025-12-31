@@ -43,7 +43,9 @@ export const ContentBlock: FC<{
     </Typography>
   );
 
-  return (
+  const isExternal = !!url && /^https?:\/\//.test(url);
+
+  const inner = (
     <Box sx={{
       pt: isCompact ? 1.25 : 2,
       pb: isCompact ? 1.5 : 2.5,
@@ -52,6 +54,7 @@ export const ContentBlock: FC<{
       pr: isCompact ? 2 : 3,
       background: blurred ? 'rgba(17, 17, 17, 0.4)' : BG_COLORS.GRAY_LIGHT,
       ...(blurred && { backdropFilter: 'blur(5px)' }),
+      ...(url && { cursor: 'pointer' }),
       ...sx
     }}>
       {title && (
@@ -75,32 +78,34 @@ export const ContentBlock: FC<{
       ) : (
         <>
           {url ? (
-            <LinkWrapper url={url}>{heroText}</LinkWrapper>
+            <>
+              <LaunchIcon color='primary' sx={{ position: 'relative', bottom: '-4px', display: 'inline' }} />{' '}
+              {heroText}
+            </>
           ) : heroText}
         </>
       )}
     </Box>
   );
-}
 
-const LinkWrapper = ({
-  children,
-  url
-}: {
-  children: ReactNode,
-  url: string
-}) => {
+  if (!url) return inner;
+
+  if (isExternal) {
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ textDecoration: 'none', display: 'block', height: '100%' }}
+      >
+        {inner}
+      </a>
+    );
+  }
+
   return (
-    <Link
-      href={url}
-      passHref
-      style={{
-        textDecoration: 'none',
-        cursor: 'pointer'
-      }}
-    >
-      <LaunchIcon color='primary' sx={{ position: 'relative', bottom: '-4px', display: 'inline' }} />{' '}
-      {children}
+    <Link href={url} passHref style={{ textDecoration: 'none', display: 'block', height: '100%' }}>
+      {inner}
     </Link>
   );
 }

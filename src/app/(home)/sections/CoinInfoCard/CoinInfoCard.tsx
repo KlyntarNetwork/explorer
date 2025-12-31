@@ -54,6 +54,8 @@ export const CoinInfoCard: FC = () => {
       toolbar: { show: false },
       zoom: { enabled: false },
       sparkline: { enabled: true },
+      // Slightly lift the chart up inside the card to reduce "bottom-heavy" feel.
+      offsetY: -7,
     },
     dataLabels: { enabled: false },
     stroke: {

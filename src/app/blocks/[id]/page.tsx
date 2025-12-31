@@ -53,22 +53,22 @@ export default async function BlockByIdPage({ params }: Props) {
               p: { xs: 1.5, md: 2.25 },
             }}
           >
-            <EntityPageLayout
+      <EntityPageLayout
               dense
-              header={{
+        header={{
                 title: 'Block ID',
-                clipBoardValue: block.id,
-                value: block.truncatedId,
-                label: {
-                  variant: status === 'Finalized' ? 'green' : 'red',
-                  value: status
-                },
-                actionText: {
-                  url: `/blocks/${id}/aggregated-finalization-proof`,
+          clipBoardValue: block.id,
+          value: block.truncatedId,
+          label: {
+            variant: status === 'Finalized' ? 'green' : 'red',
+            value: status
+          },
+          actionText: {
+            url: `/blocks/${id}/aggregated-finalization-proof`,
                   value: 'Aggregated Finalization Proof'
-                }
-              }}
-              items={[
+          }
+        }}
+        items={[
                 <ContentBlock
                   key='creator'
                   density='compact'
@@ -83,7 +83,7 @@ export default async function BlockByIdPage({ params }: Props) {
                   url={`/pools/${block.creator}(POOL)`}
                   value={block.creator}
                 />,
-                [
+          [
                   <ContentBlock
                     key='created_at'
                     density='compact'
@@ -111,8 +111,8 @@ export default async function BlockByIdPage({ params }: Props) {
                     url={`/epochs/${block.epochId}`}
                     value={block.epochId}
                   />
-                ],
-                [
+          ],
+          [
                   <ContentBlock
                     key='txs_number'
                     density='compact'
@@ -139,7 +139,7 @@ export default async function BlockByIdPage({ params }: Props) {
                     title='Index'
                     value={block.index}
                   />,
-                ],
+          ],
                 <ContentBlock
                   key='this_block_hash'
                   density='compact'
@@ -166,14 +166,14 @@ export default async function BlockByIdPage({ params }: Props) {
                   title='Previous block hash'
                   value={block.prevHash}
                 />
-              ]}
-            >
+        ]}
+      >
               <BlockHero />
-            </EntityPageLayout>
+      </EntityPageLayout>
           </Box>
 
           <Box sx={{ mt: { xs: 3, md: 4 } }}>
-            <Typography variant='h1'>Transactions</Typography>
+        <Typography variant='h1'>Transactions</Typography>
             <Typography sx={{ mt: 1, color: 'rgba(255,255,255,0.6)' }}>
               Included transactions (simulated while the node is unavailable).
             </Typography>
@@ -192,8 +192,8 @@ export default async function BlockByIdPage({ params }: Props) {
             >
               <TransactionsTable transactions={txPreviews} variant='glass' dense />
             </Box>
-          </Box>
-        </PageContainer>
+      </Box>
+    </PageContainer>
       </DimGradientBackground>
     </GradientBackground>
   );

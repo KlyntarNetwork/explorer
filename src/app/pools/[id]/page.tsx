@@ -1,13 +1,14 @@
 import { Metadata } from "next";
 import { ContentBlock, EntityPageLayout, PageContainer, GradientBackground, DimGradientBackground } from "@/components/ui";
-import { Box, Typography, IconButton, Button } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { fetchPoolById } from "@/data";
 import { truncateMiddle } from "@/helpers";
 import { StakersTable } from "./StakersTable";
 import Web3 from "web3";
 import { Language, Telegram } from "@mui/icons-material";
 import XIcon from "@mui/icons-material/X";
-import Discord from "@public/icons/social/Discord.svg";
+import LaunchIcon from "@mui/icons-material/Launch";
+import { DiscordIcon } from "@/components/ui/icons/DiscordIcon";
 import { PoolHero } from "./PoolHero";
 
 interface Props {
@@ -63,80 +64,99 @@ export default async function PoolByIdPage({ params }: Props) {
                 },
               }}
               items={[
-                [
-                  <ContentBlock key="staking_link" density="compact" blurred sx={glassBlockSx} title="Staking link">
-                    <Button
-                      component="a"
-                      variant="outlined"
-                      href={`https://portal.klyntar.org/stake?validator=${poolId.split("(")[0]}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="StakingLink"
-                      sx={actionButtonSx}
-                    >
-                      Stake
-                    </Button>
-                  </ContentBlock>,
-                  <ContentBlock key="multistaking_link" density="compact" blurred sx={glassBlockSx} title="Multistaking link">
-                    <Button
-                      component="a"
-                      variant="outlined"
-                      href={`https://portal.klyntar.org/multistake?validator=${poolId.split("(")[0]}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="MultistakingLink"
-                      sx={actionButtonSx}
-                    >
-                      Multistake
-                    </Button>
-                  </ContentBlock>,
-                ],
-                [
-                  <ContentBlock key="socials" density="compact" blurred sx={glassBlockSx} title="Socials">
-                    <Box display="flex" gap={2}>
-                      <IconButton
+                <ContentBlock key="socials" density="compact" blurred sx={glassBlockSx} title="Socials">
+                    <Box display="flex" flexWrap="wrap" gap={1.1}>
+                      <Box
                         component="a"
                         href={"https://x.com"}
                         target="_blank"
                         rel="noopener noreferrer"
-                        aria-label="Twitter"
-                        sx={socialIconSx}
+                        aria-label="X"
+                        sx={socialPillSx}
                       >
-                        <XIcon />
-                      </IconButton>
-                      <IconButton
+                        <Box sx={socialIconWrapSx}>
+                          <XIcon sx={socialIconSx} />
+                        </Box>
+                        <Typography sx={socialTextSx}>X (Twitter)</Typography>
+                        <LaunchIcon sx={socialExternalIconSx} />
+                      </Box>
+                      <Box
                         component="a"
                         href={"https://klyntar.org"}
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="Website"
-                        sx={socialIconSx}
+                        sx={socialPillSx}
                       >
-                        <Language />
-                      </IconButton>
-                      <IconButton
+                        <Box sx={socialIconWrapSx}>
+                          <Language sx={socialIconSx} />
+                        </Box>
+                        <Typography sx={socialTextSx}>Website</Typography>
+                        <LaunchIcon sx={socialExternalIconSx} />
+                      </Box>
+                      <Box
                         component="a"
                         href={"https://discord.com"}
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="Discord"
-                        sx={socialIconSx}
+                        sx={socialPillSx}
                       >
-                        <Discord />
-                      </IconButton>
-                      <IconButton
+                        <Box sx={socialIconWrapSx}>
+                          <DiscordIcon sx={socialIconSx} />
+                        </Box>
+                        <Typography sx={socialTextSx}>Discord</Typography>
+                        <LaunchIcon sx={socialExternalIconSx} />
+                      </Box>
+                      <Box
                         component="a"
                         href={"https://telegram.org"}
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="Telegram"
-                        sx={socialIconSx}
+                        sx={socialPillSx}
                       >
-                        <Telegram />
-                      </IconButton>
+                        <Box sx={socialIconWrapSx}>
+                          <Telegram sx={socialIconSx} />
+                        </Box>
+                        <Typography sx={socialTextSx}>Telegram</Typography>
+                        <LaunchIcon sx={socialExternalIconSx} />
+                      </Box>
                     </Box>
                   </ContentBlock>,
-                  <ContentBlock key="shard" density="compact" blurred sx={glassBlockSx} title="Creation shard" value={pool.poolOriginShard} />,
+                [
+                  <ContentBlock
+                    key="staking_link"
+                    density="compact"
+                    blurred
+                    url={`https://portal.klyntar.org/stake?validator=${poolId.split("(")[0]}`}
+                    sx={linkTileSx}
+                    title="Staking link"
+                  >
+                    <Box sx={linkTileInnerSx}>
+                      <Box sx={{ minWidth: 0 }}>
+                        <Typography sx={linkTileTitleSx}>Stake via portal</Typography>
+                        <Typography sx={linkTileSubtitleSx}>portal.klyntar.org</Typography>
+                      </Box>
+                      <LaunchIcon sx={linkTileIconSx} />
+                    </Box>
+                  </ContentBlock>,
+                  <ContentBlock
+                    key="multistaking_link"
+                    density="compact"
+                    blurred
+                    url={`https://portal.klyntar.org/multistake?validator=${poolId.split("(")[0]}`}
+                    sx={linkTileSx}
+                    title="Multistaking link"
+                  >
+                    <Box sx={linkTileInnerSx}>
+                      <Box sx={{ minWidth: 0 }}>
+                        <Typography sx={linkTileTitleSx}>Multistake via portal</Typography>
+                        <Typography sx={linkTileSubtitleSx}>portal.klyntar.org</Typography>
+                      </Box>
+                      <LaunchIcon sx={linkTileIconSx} />
+                    </Box>
+                  </ContentBlock>,
                 ],
                 [
                   <ContentBlock
@@ -211,50 +231,110 @@ export default async function PoolByIdPage({ params }: Props) {
   );
 }
 
-const actionButtonSx = {
-  width: "208px",
-  borderColor: "rgba(255,255,255,0.1)",
-  color: "rgba(255,255,255,0.85)",
-  textTransform: "uppercase",
-  letterSpacing: "0.1em",
-  fontSize: { xs: "0.6875rem", md: "0.75rem" },
-  px: { xs: 3, md: 4 },
-  py: { xs: 1.25, md: 1.5 },
-  borderRadius: { xs: "0.75rem", md: "1rem" },
-  backgroundColor: "rgba(17, 17, 17, 0.4)",
-  backdropFilter: "blur(10px)",
-  transition: "all 0.3s ease",
-  "&:hover": {
-    borderColor: "rgba(255,255,255,0.2)",
-    backgroundColor: "rgba(17, 17, 17, 0.6)",
-    color: "#fff",
-  },
-};
-
 const glassBlockSx = {
   border: "1px solid rgba(255,255,255,0.08)",
   borderRadius: { xs: "0.75rem", md: "1rem" },
-  backgroundColor: "rgba(0,0,0,0.55)",
+  background: "rgba(0,0,0,0.55)",
   boxShadow:
     "0 6px 24px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)",
 };
 
-const socialIconSx = {
-  width: 44,
-  height: 44,
-  borderRadius: "12px",
-  border: "1px solid rgba(255,255,255,0.10)",
-  backgroundColor: "rgba(0,0,0,0.35)",
-  backdropFilter: "blur(10px)",
-  boxShadow: "0 6px 20px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,255,255,0.06)",
-  transition: "all 160ms ease",
+const linkTileSx = {
+  ...glassBlockSx,
+  transition: "background-color 160ms ease, border-color 160ms ease, transform 160ms ease",
   "&:hover": {
-    borderColor: "rgba(255,255,255,0.18)",
-    backgroundColor: "rgba(0,0,0,0.45)",
+    borderColor: "rgba(255,255,255,0.14)",
+    background: "rgba(0,0,0,0.62)",
     transform: "translateY(-1px)",
   },
-  "& svg": {
-    width: 22,
-    height: 22,
+  "&:active": {
+    transform: "translateY(0px)",
   },
+  "&:focus-within": {
+    outline: "2px solid rgba(122,238,229,0.26)",
+    outlineOffset: 2,
+  },
+};
+
+const linkTileInnerSx = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 1.25,
+};
+
+const linkTileTitleSx = {
+  fontSize: { xs: "0.95rem", md: "1.05rem" },
+  lineHeight: 1.1,
+  color: "rgba(255,255,255,0.92)",
+  fontWeight: 500,
+};
+
+const linkTileSubtitleSx = {
+  mt: 0.15,
+  fontSize: "0.72rem",
+  lineHeight: 1.1,
+  color: "rgba(255,255,255,0.55)",
+};
+
+const linkTileIconSx = {
+  fontSize: 18,
+  color: "rgba(255,255,255,0.58)",
+  flex: "0 0 auto",
+};
+
+const socialPillSx = {
+  height: 36,
+  px: 1.1,
+  borderRadius: "999px",
+  border: "1px solid rgba(255,255,255,0.10)",
+  backgroundColor: "rgba(0,0,0,0.22)",
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 0.8,
+  textDecoration: "none",
+  transition: "background-color 160ms ease, border-color 160ms ease, transform 160ms ease",
+  "&:hover": {
+    borderColor: "rgba(255,255,255,0.16)",
+    backgroundColor: "rgba(0,0,0,0.30)",
+    transform: "translateY(-1px)",
+  },
+  "&:active": {
+    transform: "translateY(0px)",
+  },
+  "&:focus-visible": {
+    outline: "2px solid rgba(122,238,229,0.30)",
+    outlineOffset: 2,
+  },
+};
+
+const socialIconWrapSx = {
+  width: 18,
+  height: 18,
+  display: "grid",
+  placeItems: "center",
+  lineHeight: 0,
+  flex: "0 0 auto",
+  overflow: "visible",
+};
+
+const socialIconSx = {
+  width: 18,
+  height: 18,
+  display: "block",
+  color: "rgba(255,255,255,0.78)",
+  flex: "0 0 auto",
+};
+
+const socialTextSx = {
+  fontSize: "0.8rem",
+  lineHeight: 1,
+  color: "rgba(255,255,255,0.82)",
+};
+
+const socialExternalIconSx = {
+  fontSize: 16,
+  display: "block",
+  color: "rgba(255,255,255,0.55)",
+  ml: 0.15,
 };

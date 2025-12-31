@@ -134,7 +134,7 @@ export default function ContractPage({ params, forceEntityStub }: Props) {
         <EntityPageLayout
           dense
         header={{
-          title: "Account info",
+          title: "Contract info",
           clipBoardValue: contractId,
           value: truncateMiddle(contractId),
           label: { variant: "green", value: "Contract" },
@@ -333,8 +333,7 @@ function TabSection({
           },
           "& .MuiTabs-indicator": {
             height: "2px",
-            background:
-              "linear-gradient(90deg, rgba(122,238,229,0.9) 0%, rgba(255,49,49,0.65) 100%)",
+            backgroundColor: "rgba(122,238,229,0.9)",
           },
         }}
         value={tabIndex}
