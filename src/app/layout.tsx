@@ -1,8 +1,9 @@
-import { ReactNode } from 'react';
+import { ReactNode, Suspense } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { Box } from '@mui/material';
 import { Footer, Header } from '@/components';
 import { metadataConfig } from '@/config';
 import theme from '@/styles/theme';
@@ -18,7 +19,19 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>
           <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Header />
+            <Suspense
+              fallback={
+                <Box
+                  sx={{
+                    height: { xs: 64, md: 84 },
+                    backgroundColor: '#000',
+                    borderBottom: '1px solid rgba(255,255,255,0.1)',
+                  }}
+                />
+              }
+            >
+              <Header />
+            </Suspense>
             {children}
             <Footer/>
             <BackToTopButton />

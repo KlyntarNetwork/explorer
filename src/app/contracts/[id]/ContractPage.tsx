@@ -16,6 +16,7 @@ import Web3 from "web3";
 import { CircularProgress } from "@mui/material";
 import { InteractionSection } from "../InteractionSection";
 import { ContractHero } from "./ContractHero";
+import { useSearchParams } from "next/navigation";
 
 interface Props {
   params: {
@@ -25,6 +26,8 @@ interface Props {
 }
 
 export default function ContractPage({ params, forceEntityStub }: Props) {
+  const searchParams = useSearchParams();
+  const currentShard = searchParams.get("shard")?.toString() || "0";
   const [contract, setContract] = useState<ContractAccount | null>(null);
   const [transactions, setTransactions] = useState<TransactionPreview[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,11 +47,11 @@ export default function ContractPage({ params, forceEntityStub }: Props) {
         // If it looks like an EVM address, default to shard 0 (dev-friendly).
         if (decodedComponent.startsWith("0x") && decodedComponent.length === 42) {
           systemContractUI = false;
-          shardId = "0";
+          shardId = currentShard;
           contractId = decodedComponent.toLowerCase();
         } else {
           systemContractUI = true;
-          shardId = "x";
+          shardId = currentShard;
           contractId = decodedComponent;
         }
       } else {
@@ -89,7 +92,7 @@ export default function ContractPage({ params, forceEntityStub }: Props) {
     };
 
     fetchData();
-  }, [params.id]);
+  }, [params.id, currentShard]);
 
   if (loading) {
     return (

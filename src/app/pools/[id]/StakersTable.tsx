@@ -18,6 +18,7 @@ import {
   LinearProgress
 } from '@mui/material';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import LaunchIcon from '@mui/icons-material/Launch';
 import SearchIcon from '@public/icons/ui/search.svg';
 import { BG_COLORS } from '@/styles';
@@ -46,6 +47,9 @@ export const StakersTable: FC<StakersTableProps> = ({
   variant = 'default',
   dense,
 }) => {
+  const searchParams = useSearchParams();
+  const currentShard = searchParams.get('shard')?.toString() || '0';
+
   const isGlass = variant === 'glass';
   const isDense = dense ?? isGlass;
 
@@ -220,7 +224,7 @@ export const StakersTable: FC<StakersTableProps> = ({
               <TableRow key={st.id}>
                 <TableCell sx={{ width: '25%' }}>
                   <Link
-                    href={`/users/${poolOriginShard}:${st.id}`}
+                    href={`/users/${poolOriginShard}:${st.id}?shard=${encodeURIComponent(currentShard)}`}
                     passHref
                     style={{ textDecoration: 'none' }}
                   >

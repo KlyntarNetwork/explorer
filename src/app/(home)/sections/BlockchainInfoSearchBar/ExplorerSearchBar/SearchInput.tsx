@@ -20,13 +20,25 @@ export const SearchInput: FC<{
       value={query}
       onChange={handleQueryChange}
       onKeyDown={handleKeyDown}
+      size="small"
       spellCheck={false}
       autoComplete="off"
-      sx={{ flex: 1 }}
+      sx={{
+        flex: 1,
+        '& .MuiOutlinedInput-root': {
+          backgroundColor: 'transparent',
+          '& fieldset': { borderColor: 'transparent' },
+          '&:hover fieldset': { borderColor: 'transparent' },
+          '&.Mui-focused fieldset': { borderColor: 'transparent' },
+        },
+        '& .MuiOutlinedInput-input': {
+          py: 0.6,
+        },
+      }}
       inputProps={{
         maxLength: 200,
-        style: {fontSize: '14px'},
-        readOnly: isChoose
+        style: { fontSize: '13.5px' },
+        // Always allow typing. If filter is not chosen, we auto-detect type on submit.
       }}
     />
   );

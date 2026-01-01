@@ -13,13 +13,14 @@ import {
 import { BLOCKS_PER_PAGE } from '@/constants';
 import { API_ROUTES } from '@/constants/api';
 import { isEntityStubMode } from '@/config/stubMode';
+import { getDefaultShardId } from '@/config/shards';
 
 export async function fetchBlocksByShard(
   shard: string,
   currentPage: number,
   rowsPerPage: number = BLOCKS_PER_PAGE
 ): Promise<BlockPreview[]> {
-  const effectiveShard = shard || '0';
+  const effectiveShard = shard || getDefaultShardId();
   const perPage = Math.min(100, Math.max(10, rowsPerPage || BLOCKS_PER_PAGE));
 
   if (isEntityStubMode()) {

@@ -1,9 +1,7 @@
 import { FC, Suspense } from 'react';
 import { Box, Typography } from '@mui/material';
-import { ShardSearchBar } from './ShardSearchBar';
 import { LatestBlocksTable } from './LatestBlocksTable';
 import { LatestBlocksTableSkeleton } from './LatestBlocksTableSkeleton';
-import { fetchCurrentShards } from '@/data';
 import { ShowRowsSelect } from './ShowRowsSelect';
 
 interface BlocksByShardProps {
@@ -17,13 +15,6 @@ export const BlocksByShard: FC<BlocksByShardProps> = async ({
   currentPage,
   rowsPerPage,
 }: BlocksByShardProps) => {
-  const shards = await fetchCurrentShards();
-
-  const shardOptions = shards.map(shard => ({
-    label: shard,
-    value: shard
-  }));
-
   return (
     <Box sx={{ mt: { xs: 3, md: 4 } }}>
       <Box
@@ -56,17 +47,6 @@ export const BlocksByShard: FC<BlocksByShardProps> = async ({
             }}
           >
             <ShowRowsSelect value={rowsPerPage} />
-            <Box
-              sx={{
-                width: {
-                  xl: 'calc(50% - 24px)',
-                  md: '60%',
-                  xs: '100%',
-                },
-              }}
-            >
-              <ShardSearchBar shardsList={shardOptions} />
-            </Box>
           </Box>
         </Box>
 

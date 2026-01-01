@@ -11,7 +11,8 @@ export const SEARCH_OPTIONS = {
 };
 
 export const SEARCH_OPTIONS_PLACEHOLDER = {
-  [SEARCH_OPTIONS.CHOOSE]: '<-- Apply a filter to look up for a txID, SID, alias, block, pool, accountID or contractID',
+  [SEARCH_OPTIONS.CHOOSE]:
+    'Search by tx hash, block id, epoch, account, contract, pool id, or alias.',
   [SEARCH_OPTIONS.TRANSACTION_BY_HASH]: 'Enter the Tx ID - BLAKE3(KLY) or SHA3(EVM) hash of transaction',
   [SEARCH_OPTIONS.ALIAS]: 'Enter the alias of contract or user',
   [SEARCH_OPTIONS.BLOCK_BY_SID]: 'Enter the SID in format <shard>:<index>',

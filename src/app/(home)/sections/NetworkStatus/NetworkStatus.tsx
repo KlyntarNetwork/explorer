@@ -2,6 +2,7 @@
 import { FC } from 'react';
 import { Box, Typography } from '@mui/material';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { BlockchainData } from '@/definitions';
 import { logUserAction } from '@/helpers';
 import { LOCATION, USER_ACTIONS } from '@/constants';
@@ -27,16 +28,20 @@ interface NetworkInfoItem {
 }
 
 export const NetworkStatus:FC<Props> = ({ data }) => {
+  const searchParams = useSearchParams();
+  const currentShard = searchParams.get('shard')?.toString() || '0';
+  const withShard = (url: string) => `${url}${url.includes('?') ? '&' : '?'}shard=${encodeURIComponent(currentShard)}`;
+
   const networkInfoItems: NetworkInfoItem[] = [
-    { title: 'Blocks', url: '/blocks', icon: BlockIcon, size: 'large' },
-    { title: 'Epochs', url: '/epochs/' + data.epochId, icon: EpochIcon, size: 'small' },
-    { title: 'Voting & DAO', url: '/contracts/dao_voting', icon: VoteIcon, size: 'small' },
-    { title: 'Checkpoints', url: '/checkpoints', icon: CheckpointIcon, size: 'medium' },
-    { title: 'RWX Contracts', url: '/contracts/rwx_contract', icon: ContractIcon, size: 'medium' },
-    { title: 'Multistaking', url: '/contracts/multistaking', icon: StakingIcon, size: 'small' },
-    { title: 'Appchains', url: '/coming-soon', icon: AppchainIcon, size: 'medium' },
-    { title: 'Mutations', url: '/coming-soon', icon: MutationIcon, size: 'small' },
-    { title: 'Charts', url: '/coming-soon', icon: ChartIcon, size: 'large' },
+    { title: 'Blocks', url: withShard('/blocks'), icon: BlockIcon, size: 'large' },
+    { title: 'Epochs', url: withShard('/epochs/' + data.epochId), icon: EpochIcon, size: 'small' },
+    { title: 'Voting & DAO', url: withShard('/contracts/dao_voting'), icon: VoteIcon, size: 'small' },
+    { title: 'Checkpoints', url: withShard('/checkpoints'), icon: CheckpointIcon, size: 'medium' },
+    { title: 'RWX Contracts', url: withShard('/contracts/rwx_contract'), icon: ContractIcon, size: 'medium' },
+    { title: 'Multistaking', url: withShard('/contracts/multistaking'), icon: StakingIcon, size: 'small' },
+    { title: 'Appchains', url: withShard('/coming-soon'), icon: AppchainIcon, size: 'medium' },
+    { title: 'Mutations', url: withShard('/coming-soon'), icon: MutationIcon, size: 'small' },
+    { title: 'Charts', url: withShard('/coming-soon'), icon: ChartIcon, size: 'large' },
   ];
 
   return (

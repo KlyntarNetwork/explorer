@@ -19,15 +19,16 @@ export const FilterDropdown: FC<{
         onChange={handleSearchTypeChange}
         IconComponent={CustomSelectIcon}
         sx={{
-          borderRight: '1px solid',
+          borderRight: '1px solid rgba(255,255,255,0.12)',
           '& .MuiSelect-select.MuiSelect-standard.MuiInputBase-input': {
-            pl: 4.5,
-            pr: 2,
-            py: 0.8
+            pl: 4,
+            pr: 1.75,
+            py: 0.55,
+            fontSize: '0.82rem',
           }
         }}
       >
-        <MenuItem value={SEARCH_OPTIONS.CHOOSE} sx={{ display: 'none' }}>Filter</MenuItem>
+        <MenuItem value={SEARCH_OPTIONS.CHOOSE}>Auto</MenuItem>
         <MenuItem value={SEARCH_OPTIONS.TRANSACTION_BY_HASH}>Tx ID</MenuItem>
         <MenuItem value={SEARCH_OPTIONS.BLOCK_BY_SID}>SID</MenuItem>
         <MenuItem value={SEARCH_OPTIONS.BLOCK_BY_ID}>Block ID</MenuItem>

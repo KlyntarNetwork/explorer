@@ -5,6 +5,7 @@ import { API_ROUTES } from '@/constants/api';
 import { fetchCurrentEpoch } from '@/data/epochs';
 import { getInfoFromEpoch, getTxSuccessRate } from './utils';
 import { isEntityStubMode, isGlobalStubMode } from '@/config/stubMode';
+import { getShardIds } from '@/config/shards';
 
 export async function fetchBlockchainData(): Promise<BlockchainData> {
 
@@ -136,17 +137,7 @@ export async function fetchRecentTotalBlocksAndTxs(limit: number): Promise<Recen
 }
 
 export async function fetchCurrentShards(): Promise<string[]> {
-  const mockShards = () => ['0', '1', '2', '3'];
-
-  if (isEntityStubMode()) {
-    return mockShards();
-  }
-
-  try {
-    const currentShardsData = await api.get<ShardsData>(API_ROUTES.CHAIN.CURRENT_SHARDS_LEADERS);
-
-    return Object.keys(currentShardsData);
-  } catch (e: any) {
-    throw new Error(`Failed to fetch current shards - ${e.message}`);
-  }
+  // Shards are configured statically in shards.json.
+  // Each shard may point to a different node URL; API client routes per shard automatically.
+  return getShardIds();
 }
