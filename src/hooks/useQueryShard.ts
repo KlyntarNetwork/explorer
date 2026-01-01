@@ -28,17 +28,19 @@ export function useQueryShard(shardsList: ComboboxItemProps[]) {
 
   const handleQueryChange = (_: any, newValue: ComboboxItemProps) => {
     if (newValue && newValue.label) {
-      setQueryParameters(newValue.label, true);
+      // Shard switch changes the underlying dataset (e.g. /blocks), so reset pagination.
+      setQueryParameters(newValue.label, true, true);
     } else {
       setQuery(undefined);
     }
   }
 
-  const setQueryParameters = (shard: string, shardWasFound: boolean) => {
+  const setQueryParameters = (shard: string, shardWasFound: boolean, resetPage: boolean = false) => {
     const params = new URLSearchParams(searchParams);
     params.set('shard', shard)
-    if (!shardWasFound) {
-      params.set('page', String(1));
+    if (!shardWasFound || resetPage) {
+      // Reset pagination without polluting URL with page=1
+      params.delete('page');
     }
     replace(`${pathname}?${params.toString()}`, { scroll: false });
   }

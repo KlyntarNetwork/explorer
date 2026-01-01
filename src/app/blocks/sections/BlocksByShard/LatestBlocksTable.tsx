@@ -16,6 +16,7 @@ import { BlockPreview } from '@/definitions';
 import { FlexCenterBox, ButtonPagination } from '@/components/ui';
 import { fetchBlocksByShard } from '@/data';
 import { truncateMiddle } from '@/helpers';
+import { getDefaultShardId } from '@/config/shards';
 
 interface LatestBlocksTableProps {
   shard: string;
@@ -35,7 +36,7 @@ export const LatestBlocksTable: FC<LatestBlocksTableProps> = async ({
     <TableRow key={block.sid}>
       <TableCell sx={{ width: '20%' }}>
         <Link
-          href={`/blocks/${block.id}`}
+          href={`/blocks/${block.id}?shard=${encodeURIComponent(shard || getDefaultShardId())}`}
           passHref
           style={{ textDecoration: 'none' }}
         >

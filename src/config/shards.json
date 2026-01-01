@@ -1,0 +1,12 @@
+{
+  "defaultShardId": "0",
+  "shards": [
+    {
+      "id": "0",
+      "nodeUrl": "http://localhost:7332"
+    }
+  ]
+}
+
+
+

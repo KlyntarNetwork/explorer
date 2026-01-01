@@ -44,6 +44,10 @@ export const ContentBlock: FC<{
   );
 
   const isExternal = !!url && /^https?:\/\//.test(url);
+  // NOTE:
+  // This component is used from both Server and Client Components.
+  // Do NOT import `next/headers` here. Shard is propagated via explicit URLs or middleware redirect.
+  const urlWithShard = url;
 
   const inner = (
     <Box sx={{
@@ -88,12 +92,12 @@ export const ContentBlock: FC<{
     </Box>
   );
 
-  if (!url) return inner;
+  if (!urlWithShard) return inner;
 
   if (isExternal) {
     return (
       <a
-        href={url}
+        href={urlWithShard}
         target="_blank"
         rel="noopener noreferrer"
         style={{ textDecoration: 'none', display: 'block', height: '100%' }}
@@ -104,7 +108,7 @@ export const ContentBlock: FC<{
   }
 
   return (
-    <Link href={url} passHref style={{ textDecoration: 'none', display: 'block', height: '100%' }}>
+    <Link href={urlWithShard} passHref style={{ textDecoration: 'none', display: 'block', height: '100%' }}>
       {inner}
     </Link>
   );

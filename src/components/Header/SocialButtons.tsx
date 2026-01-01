@@ -1,4 +1,4 @@
-import { Box, Divider, Grow, Menu, MenuItem, Typography } from "@mui/material";
+import { Box, Button, Divider, Grow, Menu, MenuItem, Typography } from "@mui/material";
 import type { SvgIconProps } from "@mui/material/SvgIcon";
 import ChangeCircleIcon from "@mui/icons-material/ChangeCircle";
 import AssuredWorkloadIcon from "@mui/icons-material/AssuredWorkload";
@@ -6,19 +6,29 @@ import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import SpellcheckIcon from "@mui/icons-material/Spellcheck";
 import DrawIcon from "@mui/icons-material/Draw";
-import { socialIconsWithLinks } from "@/config";
-import { OutlinedButton } from "@/components/ui";
+import LocalDrinkOutlinedIcon from "@mui/icons-material/LocalDrinkOutlined";
 import React, { useState } from "react";
-import { Code, Link, Search } from "@mui/icons-material";
+import { Code, Search } from "@mui/icons-material";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import XIcon from "@mui/icons-material/X";
+import TelegramIcon from "@mui/icons-material/Telegram";
+import RedditIcon from "@mui/icons-material/Reddit";
+import FacebookIcon from "@mui/icons-material/Facebook";
+import LanguageIcon from "@mui/icons-material/Language";
+import { KLY_LINKS } from "@/config";
+
+type DropdownItem = {
+  name: string;
+  icon: React.ComponentType<SvgIconProps>;
+  badge?: string;
+  url?: string;
+  external?: boolean;
+};
 
 interface DropdownData {
-  Tools: {
-    name: string;
-    icon: React.ComponentType<SvgIconProps>;
-    badge?: string;
-  }[];
-  Explore: { name: string; icon: React.ComponentType<SvgIconProps>; badge?: string }[];
-  Services: { name: string; icon: React.ComponentType<SvgIconProps>; badge?: string }[];
+  Tools: DropdownItem[];
+  Explore: DropdownItem[];
+  Services: DropdownItem[];
 }
 
 const dropdownData: DropdownData = {
@@ -26,10 +36,16 @@ const dropdownData: DropdownData = {
     { name: "Unit converter", icon: ChangeCircleIcon },
     { name: "Account checker", icon: Search },
     { name: "Data decoder", icon: Code, badge: "Beta" },
+    {
+      name: "Testnet faucet",
+      icon: LocalDrinkOutlinedIcon,
+      url: KLY_LINKS.TESTNET_FAUCET,
+      external: true,
+    },
   ],
   Explore: [
     { name: "Tokens", icon: AssuredWorkloadIcon },
-    { name: "Appchains", icon: Link },
+    { name: "Appchains", icon: LanguageIcon },
     { name: "Social value portal", icon: AutoAwesomeIcon },
   ],
   Services: [
@@ -41,7 +57,15 @@ const dropdownData: DropdownData = {
 
 const dropdownKeys = Object.keys(dropdownData) as (keyof DropdownData)[];
 
-export const SocialButtons = () => {
+const socialLinks: Array<{ label: string; url: string; icon: React.ComponentType<any> }> = [
+  { label: "GitHub", url: KLY_LINKS.GITHUB, icon: GitHubIcon },
+  { label: "X", url: KLY_LINKS.TWITTER, icon: XIcon },
+  { label: "Telegram", url: KLY_LINKS.TELEGRAM, icon: TelegramIcon },
+  { label: "Reddit", url: KLY_LINKS.REDDIT, icon: RedditIcon },
+  { label: "Facebook", url: KLY_LINKS.FACEBOOK, icon: FacebookIcon },
+];
+
+export const SocialButtons = ({ variant = "header" }: { variant?: "header" | "mobile" }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
 
@@ -62,29 +86,52 @@ export const SocialButtons = () => {
     <Box
       sx={{
         display: "flex",
-        flexWrap: "wrap",
+        flexWrap: variant === "mobile" ? "wrap" : "nowrap",
         gap: 1,
-        mr: 1,
+        mr: variant === "mobile" ? 0 : 1,
+        alignItems: "center",
+        whiteSpace: "nowrap",
       }}
     >
-      <OutlinedButton
+      <Button
         key={"more_button"}
-        text="More"
         id="more-menu-button"
         aria-haspopup="true"
         aria-controls={open ? "more-menu" : undefined}
         aria-expanded={open ? "true" : undefined}
-        sx={{
-          width: { xs: "70px", md: "84px" },
-          fontSize: { xs: "0.75rem", md: "0.8125rem" },
-          letterSpacing: "0.08em",
-          textTransform: "uppercase",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
         onClick={handleClick}
-      />
+        sx={{
+          height: { xs: 38, md: 44 },
+          px: { xs: 1.4, md: 1.6 },
+          borderRadius: "999px",
+          border: "1px solid rgba(255,255,255,0.10)",
+          backgroundColor: open ? "rgba(17,17,17,0.52)" : "rgba(17,17,17,0.30)",
+          backdropFilter: "blur(10px)",
+          boxShadow: "0 16px 44px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06)",
+          transition: "background-color 160ms ease, border-color 160ms ease, transform 160ms ease",
+          color: "rgba(255,255,255,0.92)",
+          "&:hover": {
+            backgroundColor: "rgba(255,255,255,0.92)",
+            borderColor: "rgba(255,255,255,0.92)",
+            color: "#000",
+            transform: "translateY(-1px)",
+          },
+          "&:active": { transform: "translateY(0px)" },
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize: { xs: "0.78rem", md: "0.82rem" },
+            textTransform: "uppercase",
+            letterSpacing: "0.10em",
+            color: "inherit",
+            fontWeight: 500,
+            lineHeight: 1,
+          }}
+        >
+          More
+        </Typography>
+      </Button>
       <Menu
         id="more-menu"
         anchorEl={anchorEl}
@@ -202,9 +249,13 @@ export const SocialButtons = () => {
               </Typography>
 
                   <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-                    {dropdownData[columnTitle].map(({ name, icon: Icon, badge }, idx) => (
+                    {dropdownData[columnTitle].map(({ name, icon: Icon, badge, url, external }, idx) => (
                   <MenuItem
                     key={name}
+                    component={url ? "a" : "li"}
+                    href={url}
+                    target={external ? "_blank" : undefined}
+                    rel={external ? "noopener noreferrer" : undefined}
                     onClick={handleClose}
                     sx={{
                           // pill buttons on dark panel
@@ -277,9 +328,61 @@ export const SocialButtons = () => {
           </Box>
         </Box>
       </Menu>
-      {socialIconsWithLinks.map(({ icon: Icon, url }) => (
-        <OutlinedButton key={url} icon={<Icon />} url={url} />
-      ))}
+      <Box
+        sx={{
+          display: "flex",
+          gap: 0.75,
+          alignItems: "center",
+          px: 0,
+          ml: 0,
+          // No "group outline" — each social button has its own outline
+          border: "none",
+          backgroundColor: "transparent",
+          backdropFilter: "none",
+          flexWrap: variant === "mobile" ? "wrap" : "nowrap",
+        }}
+      >
+        {socialLinks.map(({ icon: Icon, url }, idx) => (
+          <Button
+            key={url}
+            component="a"
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{
+              // In header (tight space): keep it compact on xs.
+              // In mobile menu: show all icons.
+              display:
+                variant === "mobile"
+                  ? "grid"
+                  : ({ xs: idx < 3 ? "grid" : "none", lg: "grid" } as any),
+              p: 0,
+              minWidth: 0,
+              width: { xs: 38, md: 40 },
+              height: { xs: 38, md: 40 },
+              borderRadius: "999px",
+              // Per-button outline (match Faucet button)
+              border: "1px solid rgba(255,255,255,0.10)",
+              backgroundColor: "rgba(17,17,17,0.30)",
+              backdropFilter: "blur(10px)",
+              boxShadow: "0 16px 44px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06)",
+              transition: "background-color 160ms ease, border-color 160ms ease, transform 160ms ease",
+              placeItems: "center",
+              lineHeight: 0,
+              color: "rgba(255,255,255,0.92)",
+              "&:hover": {
+                backgroundColor: "rgba(255,255,255,0.92)",
+                borderColor: "rgba(255,255,255,0.92)",
+                color: "#000",
+                transform: "translateY(-1px)",
+              },
+              "&:active": { transform: "translateY(0px)" },
+            }}
+          >
+            <Icon sx={{ fontSize: 18, display: "block", color: "inherit" }} />
+          </Button>
+        ))}
+      </Box>
     </Box>
   );
 };

@@ -73,7 +73,7 @@ export default async function PoolByIdPage({ params }: Props) {
                 <ContentBlock density="compact" blurred sx={glassBlockSx} title="Epoch index" value={epoch.id} />
               </Grid>
               <Grid item xs={12} md={6}>
-                <ContentBlock density="compact" blurred sx={glassBlockSx} title="Shards" value={epoch.shardsNumber} />
+                <ContentBlock density="compact" blurred sx={glassBlockSx} title="Blocks generated" value={epoch.totalBlocksNumber} />
               </Grid>
               <Grid item xs={12} md={6}>
                 <ContentBlock density="compact" blurred sx={glassBlockSx} title="Quorum size" value={epoch.quorumSize} />
@@ -81,13 +81,10 @@ export default async function PoolByIdPage({ params }: Props) {
               <Grid item xs={12} md={6}>
                 <ContentBlock density="compact" blurred sx={glassBlockSx} title="Total validators" value={epoch.validatorsNumber} />
               </Grid>
-              <Grid item xs={12} md={4}>
-                <ContentBlock density="compact" blurred sx={glassBlockSx} title="Blocks generated" value={epoch.totalBlocksNumber} />
-              </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={6}>
                 <ContentBlock density="compact" blurred sx={glassBlockSx} title="Transactions executed" value={epoch.totalTxsNumber} />
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={6}>
                 <ContentBlock density="compact" blurred sx={glassBlockSx} title="Txs success rate" value={epoch.txsSuccessRate} />
               </Grid>
               <Grid item xs={12}>

@@ -3,6 +3,7 @@ import { Fragment, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { MobileNetworksList, DesktopNetworksList } from './NetworksList';
 import { SocialButtons } from './SocialButtons';
+import { ShardSelector } from './ShardSelector';
 import {
   Box,
   Collapse,
@@ -17,6 +18,8 @@ import KlyntarFoundationLogo from '@public/icons/company/KlyntarFoundationLogo.s
 import MenuIcon from '@public/icons/ui/menu.svg';
 import Close from '@public/icons/ui/close.svg';
 
+const MobileSocialButtons = () => <SocialButtons variant="mobile" />;
+
 const mobileHeaderElements = [
   {
     id: 'networks',
@@ -26,11 +29,11 @@ const mobileHeaderElements = [
   {
     id: 'socials_and_other',
     label: 'Social media & other',
-    element: SocialButtons,
+    element: MobileSocialButtons,
   },
 ];
 
-export const Header = () => {
+export const Header = ({ shardsList }: { shardsList: string[] }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [openedElement, setOpenedElement] = useState<string | null>(null);
 
@@ -81,17 +84,17 @@ export const Header = () => {
         )}
         <Box
           sx={{
-            display: {
-              '@media (max-width: 1045px)': {
-                display: 'none',
-              },
-              md: 'flex',
-              gap: 30,
-              alignItems: 'center'
-            },
+            display: { '@media (max-width: 1045px)': { display: 'none' }, md: 'flex' },
+            gap: { md: 1.5, lg: 2 },
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            flexWrap: 'nowrap',
+            whiteSpace: 'nowrap',
           }}
         >
           <SocialButtons />
+          {/* Global shard selector (affects /blocks, searchbar SID, etc.) */}
+          <ShardSelector shards={shardsList} />
           <DesktopNetworksList />
         </Box>
       </Box>
@@ -103,6 +106,9 @@ export const Header = () => {
                 display: 'none',
               },} }}
       >
+        <Box sx={{ px: 2, pb: 1.5, pt: 1 }}>
+          <ShardSelector shards={shardsList} fullWidth />
+        </Box>
         <List
           sx={{ 
             width: '100%', 
