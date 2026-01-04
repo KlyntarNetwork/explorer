@@ -8,7 +8,7 @@ import api from '@/helpers/api';
 import { API_ROUTES } from '@/constants/api';
 import { ChainInfo } from '@/definitions';
 import { EpochProgressBar } from './EpochProgressBar';
-import { isEntityStubMode, isGlobalStubMode } from '@/config/stubMode';
+import { isEntityStubMode } from '@/config/stubMode';
 
 interface Props {
   params: {
@@ -26,7 +26,7 @@ export default async function PoolByIdPage({ params }: Props) {
   // Epoch duration comes from chain params. In stub/offline mode we must not crash the page.
   // Fallback is 90s (matches mock epoch timestamps logic in src/data/epochs.ts).
   let epochDurationMs = 90 * 1000;
-  if (!isEntityStubMode() && !isGlobalStubMode()) {
+  if (!isEntityStubMode()) {
     try {
       const chainInfo = await api.get<ChainInfo>(API_ROUTES.CHAIN.INFO);
       epochDurationMs = chainInfo.approvementThread.params.EPOCH_TIME || epochDurationMs;
