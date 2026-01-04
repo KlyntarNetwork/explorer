@@ -3,7 +3,7 @@ import { Fragment, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { MobileNetworksList, DesktopNetworksList } from './NetworksList';
 import { SocialButtons } from './SocialButtons';
-import { ShardSelector } from './ShardSelector';
+import { SiteSettingsModal } from './SiteSettingsModal';
 import {
   Box,
   Collapse,
@@ -11,12 +11,14 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
+  Button,
 } from '@mui/material';
 import { OutlinedButton, PageContainer } from '@/components/ui';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import KlyntarFoundationLogo from '@public/icons/company/KlyntarFoundationLogo.svg';
 import MenuIcon from '@public/icons/ui/menu.svg';
 import Close from '@public/icons/ui/close.svg';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 
 const MobileSocialButtons = () => <SocialButtons variant="mobile" />;
 
@@ -36,6 +38,7 @@ const mobileHeaderElements = [
 export const Header = ({ shardsList }: { shardsList: string[] }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [openedElement, setOpenedElement] = useState<string | null>(null);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   useEffect(() => {
     const resizeHandler = () => setIsOpen(false);
@@ -51,6 +54,11 @@ export const Header = ({ shardsList }: { shardsList: string[] }) => {
         borderBottom: '1px solid rgba(255,255,255,0.1)',
       }}
     >
+      <SiteSettingsModal
+        open={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        shardsList={shardsList}
+      />
       <PageContainer
         sx={{ pt: { xs: 1.5, md: 2 }, pb: { xs: 1.5, md: 2 } }}
       >
@@ -93,8 +101,36 @@ export const Header = ({ shardsList }: { shardsList: string[] }) => {
           }}
         >
           <SocialButtons />
-          {/* Global shard selector (affects /blocks, searchbar SID, etc.) */}
-          <ShardSelector shards={shardsList} />
+          <Button
+            onClick={() => setIsSettingsOpen(true)}
+            startIcon={<SettingsOutlinedIcon sx={{ color: 'inherit' }} />}
+            sx={{
+              height: { xs: 38, md: 44 },
+              border: '1px solid rgba(255,255,255,0.10)',
+              backgroundColor: 'rgba(17, 17, 17, 0.30)',
+              backdropFilter: 'blur(10px)',
+              color: 'rgba(255,255,255,0.92)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.10em',
+              fontSize: { xs: '0.78rem', md: '0.82rem' },
+              fontWeight: 500,
+              px: { xs: 1.4, md: 1.6 },
+              borderRadius: '999px',
+              boxShadow: '0 16px 44px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06)',
+              transition: 'background-color 160ms ease, border-color 160ms ease, transform 160ms ease',
+              ':hover': { 
+                background: 'rgba(255,255,255,0.92)',
+                borderColor: 'rgba(255,255,255,0.92)',
+                color: '#000',
+                transform: 'translateY(-1px)',
+              },
+              '&:active': { transform: 'translateY(0px)' },
+              '& .MuiButton-startIcon': { mr: { xs: 0, md: 1 } },
+              '& .MuiButton-startIcon > *:nth-of-type(1)': { fontSize: 18 },
+            }}
+          >
+            <Box sx={{ display: { xs: 'none', md: 'inline' } }}>Settings</Box>
+          </Button>
           <DesktopNetworksList />
         </Box>
       </Box>
@@ -107,7 +143,34 @@ export const Header = ({ shardsList }: { shardsList: string[] }) => {
               },} }}
       >
         <Box sx={{ px: 2, pb: 1.5, pt: 1 }}>
-          <ShardSelector shards={shardsList} fullWidth />
+          <Button
+            onClick={() => setIsSettingsOpen(true)}
+            startIcon={<SettingsOutlinedIcon sx={{ color: 'inherit' }} />}
+            sx={{
+              height: 44,
+              width: '100%',
+              border: '1px solid rgba(255,255,255,0.10)',
+              backgroundColor: 'rgba(17, 17, 17, 0.30)',
+              backdropFilter: 'blur(10px)',
+              color: 'rgba(255,255,255,0.92)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.10em',
+              fontSize: '0.82rem',
+              fontWeight: 500,
+              px: 1.6,
+              borderRadius: '999px',
+              boxShadow: '0 16px 44px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06)',
+              transition: 'background-color 160ms ease, border-color 160ms ease, transform 160ms ease',
+              ':hover': { 
+                background: 'rgba(255,255,255,0.92)',
+                borderColor: 'rgba(255,255,255,0.92)',
+                color: '#000',
+              },
+              '& .MuiButton-startIcon > *:nth-of-type(1)': { fontSize: 18 },
+            }}
+          >
+            Site settings
+          </Button>
         </Box>
         <List
           sx={{ 

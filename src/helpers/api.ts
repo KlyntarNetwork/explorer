@@ -1,5 +1,23 @@
 import { getDefaultShardId, getShardNodeUrl, SHARD_COOKIE_KEY } from '@/config/shards';
 
+const CUSTOM_RPC_COOKIE_PREFIX = 'klyntar_custom_rpc_';
+const CUSTOM_RPC_STORAGE_PREFIX = 'klyntar:customRpc:';
+
+function withTrailingSlash(url: string) {
+  const u = (url || '').trim();
+  if (!u) return u;
+  return u.endsWith('/') ? u : `${u}/`;
+}
+
+function safeDecode(v?: string) {
+  if (!v) return '';
+  try {
+    return decodeURIComponent(v);
+  } catch {
+    return v;
+  }
+}
+
 class Fetcher {
   private getBaseUrl() {
     // Server: shard is stored in cookie by middleware
@@ -10,10 +28,11 @@ class Fetcher {
       try {
         const mod = require('next/headers') as { cookies: () => { get: (k: string) => { value?: string } | undefined } };
         const shard = mod.cookies().get(SHARD_COOKIE_KEY)?.value || getDefaultShardId();
-        const url = getShardNodeUrl(shard);
-        return url.endsWith('/') ? url : `${url}/`;
+        const custom = safeDecode(mod.cookies().get(`${CUSTOM_RPC_COOKIE_PREFIX}${shard}`)?.value);
+        const base = custom || getShardNodeUrl(shard);
+        return withTrailingSlash(base);
       } catch {
-        return fallbackUrl.endsWith('/') ? fallbackUrl : `${fallbackUrl}/`;
+        return withTrailingSlash(fallbackUrl);
       }
     }
 
@@ -21,11 +40,17 @@ class Fetcher {
     try {
       const params = new URLSearchParams(window.location.search);
       const shard = params.get('shard') || getDefaultShardId();
-      const url = getShardNodeUrl(shard);
-      return url.endsWith('/') ? url : `${url}/`;
+      let custom = '';
+      try {
+        custom = window.localStorage.getItem(`${CUSTOM_RPC_STORAGE_PREFIX}${shard}`) || '';
+      } catch {
+        // ignore
+      }
+      const base = custom || getShardNodeUrl(shard);
+      return withTrailingSlash(base);
     } catch {
       const url = getShardNodeUrl(getDefaultShardId());
-      return url.endsWith('/') ? url : `${url}/`;
+      return withTrailingSlash(url);
     }
   }
 
