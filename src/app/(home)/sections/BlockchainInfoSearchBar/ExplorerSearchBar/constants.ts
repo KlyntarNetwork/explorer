@@ -12,7 +12,7 @@ export const SEARCH_OPTIONS = {
 
 export const SEARCH_OPTIONS_PLACEHOLDER = {
   [SEARCH_OPTIONS.CHOOSE]:
-    'Search by tx hash, block id, epoch, account, contract, pool id, or alias.',
+    'Search by tx hash, block id, contract id, account id, container id, pool id, epoch id, alias',
   [SEARCH_OPTIONS.TRANSACTION_BY_HASH]: 'Enter the Tx ID - BLAKE3(KLY) or SHA3(EVM) hash of transaction',
   [SEARCH_OPTIONS.ALIAS]: 'Enter the alias of contract or user',
   [SEARCH_OPTIONS.BLOCK_BY_SID]: 'Enter the SID in format <shard>:<index>',

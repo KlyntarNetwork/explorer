@@ -5,3 +5,4 @@ export * from './NetworkStatus';
 export * from './MetricsGrid';
 export * from './CoinInfoCard';
 export * from './TopStatsRow';
+export * from './TrendingTicker';

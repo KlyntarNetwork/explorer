@@ -4,6 +4,11 @@ import { Box, Grid, Typography } from '@mui/material';
 import { fetchEpochById } from '@/data';
 import { FormattedDate } from '@/helpers';
 import { ValidatorsQuorumSection } from './ValidatorsQuorumSection';
+import api from '@/helpers/api';
+import { API_ROUTES } from '@/constants/api';
+import { ChainInfo } from '@/definitions';
+import { EpochProgressBar } from './EpochProgressBar';
+import { isEntityStubMode, isGlobalStubMode } from '@/config/stubMode';
 
 interface Props {
   params: {
@@ -18,6 +23,17 @@ export const metadata: Metadata = {
 export default async function PoolByIdPage({ params }: Props) {
   const id = decodeURIComponent(params.id);
   const epoch = await fetchEpochById(Number(id));
+  // Epoch duration comes from chain params. In stub/offline mode we must not crash the page.
+  // Fallback is 90s (matches mock epoch timestamps logic in src/data/epochs.ts).
+  let epochDurationMs = 90 * 1000;
+  if (!isEntityStubMode() && !isGlobalStubMode()) {
+    try {
+      const chainInfo = await api.get<ChainInfo>(API_ROUTES.CHAIN.INFO);
+      epochDurationMs = chainInfo.approvementThread.params.EPOCH_TIME || epochDurationMs;
+    } catch {
+      // keep fallback
+    }
+  }
 
   const startedAt = new FormattedDate(epoch.startTimestamp).UTCHoursMinutesSeconds;
 
@@ -66,6 +82,13 @@ export default async function PoolByIdPage({ params }: Props) {
             }}
           >
             <Grid container spacing={{ xs: 1.5, md: 2 }}>
+              <Grid item xs={12}>
+                <EpochProgressBar
+                  startTimestamp={epoch.startTimestamp}
+                  epochDurationMs={epochDurationMs}
+                  isCurrent={epoch.isCurrent}
+                />
+              </Grid>
               <Grid item xs={12}>
                 <ContentBlock density="compact" blurred sx={glassBlockSx} title="Started at" value={startedAt} />
               </Grid>

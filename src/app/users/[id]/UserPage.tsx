@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import NotFoundPage from "@/app/not-found";
-import { Box, Typography, Tabs, Tab, CircularProgress } from "@mui/material";
+import { Box, Typography, Tabs, Tab } from "@mui/material";
 import {
   ContentBlock,
   EntityPageLayout,
   Label,
   TransactionsTable,
+  EntityPageSkeleton,
 } from "@/components/ui";
 import { fetchAccountById, fetchAccountTransactions } from "@/data";
 import { truncateMiddle } from "@/helpers";
@@ -56,26 +57,7 @@ export default function UserPage({ params, forceEntityStub }: Props) {
   }, [params.id]);
 
   if (loading) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "65vh",
-        }}
-      >
-        <CircularProgress
-          sx={{
-            color: "white",
-            animation: "rotate 1.5s linear infinite",
-            width: "50px",
-            height: "50px",
-          }}
-        />
-      </Box>
-    );
+    return <EntityPageSkeleton title="Account info" blocks={8} showTable />;
   }
 
   if (!account || account.type !== "eoa") {
