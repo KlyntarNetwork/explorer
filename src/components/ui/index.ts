@@ -7,3 +7,4 @@ export * from './buttons';
 export * from './blocks';
 export * from './tables';
 export * from './layouts';
+export * from './skeletons';

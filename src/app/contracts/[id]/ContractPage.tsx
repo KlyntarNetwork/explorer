@@ -9,11 +9,11 @@ import {
   EntityPageLayout,
   Label,
   TransactionsTable,
+  EntityPageSkeleton,
 } from "@/components/ui";
 import { ContractAccount, TransactionPreview } from "@/definitions";
 import NotFoundPage from "@/app/not-found";
 import Web3 from "web3";
-import { CircularProgress } from "@mui/material";
 import { InteractionSection } from "../InteractionSection";
 import { ContractHero } from "./ContractHero";
 import { useSearchParams } from "next/navigation";
@@ -95,26 +95,7 @@ export default function ContractPage({ params, forceEntityStub }: Props) {
   }, [params.id, currentShard]);
 
   if (loading) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "65vh",
-        }}
-      >
-        <CircularProgress
-          sx={{
-            color: "white",
-            animation: "rotate 1.5s linear infinite",
-            width: "50px",
-            height: "50px",
-          }}
-        />
-      </Box>
-    );
+    return <EntityPageSkeleton title="Contract info" blocks={9} showTable />;
   }
 
   if (!contract || contract.type !== "contract") {

@@ -142,13 +142,14 @@ export const CoinInfoCard: FC = () => {
   return (
     <Box
       sx={{
-        backgroundColor: '#000',
+        backgroundColor: 'rgba(17, 17, 17, 0.4)',
+        backdropFilter: 'blur(10px)',
         border: '1px solid rgba(255,255,255,0.1)',
         borderRadius: { xs: '0.5rem', md: '0.75rem' },
         p: { xs: '1rem', md: '1.25rem' },
         height: '100%',
         overflow: 'hidden',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',

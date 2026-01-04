@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import { Box, Grid } from '@mui/material';
 import {
   BlockchainInfoSearchBar,
+  TrendingTicker,
   NetworkParameters,
   NetworkStatus,
   TopStatsRow
@@ -72,6 +73,9 @@ export default async function HomePage() {
     >
       <BlockchainInfoSearchBar />
       <PageContainer sx={{ pt: { xs: 3, md: 4 }, pb: 5, position: 'relative', zIndex: 1 }}>
+        <Box sx={{ mb: { xs: 2.5, md: 3 } }}>
+          <TrendingTicker />
+        </Box>
         <Box sx={{ mb: { xs: 3, md: 4 } }}>
           <TopStatsRow data={blockchainData} />
         </Box>

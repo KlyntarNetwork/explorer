@@ -82,7 +82,7 @@ export const BlockchainInfoSearchBar: FC = () => {
               color: 'rgba(255,255,255,0.65)',
             }}
           >
-            Search blocks, transactions, accounts, pools, and contracts in real time.
+            Search anything on Klyntar — paste an ID or alias and jump straight to the details
           </Typography>
         </Box>
         <ExplorerSearchBar />
