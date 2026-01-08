@@ -6,13 +6,13 @@ import { ShowRowsSelect } from './ShowRowsSelect';
 
 interface BlocksByShardProps {
   shard: string;
-  currentPage: number;
+  from?: number;
   rowsPerPage: number;
 }
 
 export const BlocksByShard: FC<BlocksByShardProps> = async ({
   shard,
-  currentPage,
+  from,
   rowsPerPage,
 }: BlocksByShardProps) => {
   return (
@@ -50,8 +50,8 @@ export const BlocksByShard: FC<BlocksByShardProps> = async ({
           </Box>
         </Box>
 
-        <Suspense key={`${shard}_${currentPage}_${rowsPerPage}`} fallback={<LatestBlocksTableSkeleton />}>
-          <LatestBlocksTable shard={shard} currentPage={currentPage} rowsPerPage={rowsPerPage} />
+        <Suspense key={`${shard}_${from ?? 'latest'}_${rowsPerPage}`} fallback={<LatestBlocksTableSkeleton />}>
+          <LatestBlocksTable shard={shard} from={from} rowsPerPage={rowsPerPage} />
         </Suspense>
       </Box>
     </Box>

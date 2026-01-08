@@ -13,23 +13,24 @@ import {
 import LaunchIcon from '@mui/icons-material/Launch';
 import Link from 'next/link';
 import { BlockPreview } from '@/definitions';
-import { FlexCenterBox, ButtonPagination } from '@/components/ui';
+import { FlexCenterBox } from '@/components/ui';
 import { fetchBlocksByShard } from '@/data';
 import { truncateMiddle } from '@/helpers';
 import { getDefaultShardId } from '@/config/shards';
+import { BlocksPagination } from './BlocksPagination';
 
 interface LatestBlocksTableProps {
   shard: string;
-  currentPage: number;
+  from?: number;
   rowsPerPage: number;
 }
 
 export const LatestBlocksTable: FC<LatestBlocksTableProps> = async ({
   shard,
-  currentPage,
+  from,
   rowsPerPage,
 }) => {
-  const blocks = await fetchBlocksByShard(shard, currentPage, rowsPerPage);
+  const { blocks, latestHeight, from: normalizedFrom } = await fetchBlocksByShard(shard, from, rowsPerPage);
   const blocksExist = !!blocks.length;
 
   const rows = blocks.map((block: BlockPreview) => (
@@ -143,8 +144,11 @@ export const LatestBlocksTable: FC<LatestBlocksTableProps> = async ({
       </TableContainer>
 
       <FlexCenterBox sx={{ my: 5 }}>
-        <ButtonPagination
-          disabled={blocks.length < rowsPerPage}
+        <BlocksPagination
+          shard={shard}
+          rowsPerPage={rowsPerPage}
+          latestHeight={latestHeight}
+          from={normalizedFrom}
         />
       </FlexCenterBox>
     </>

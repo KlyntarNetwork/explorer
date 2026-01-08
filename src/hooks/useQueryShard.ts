@@ -41,6 +41,7 @@ export function useQueryShard(shardsList: ComboboxItemProps[]) {
     if (!shardWasFound || resetPage) {
       // Reset pagination without polluting URL with page=1
       params.delete('page');
+      params.delete('from');
     }
     replace(`${pathname}?${params.toString()}`, { scroll: false });
   }
