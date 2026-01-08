@@ -15,28 +15,57 @@ import { API_ROUTES } from '@/constants/api';
 import { isEntityStubMode } from '@/config/stubMode';
 import { getDefaultShardId } from '@/config/shards';
 
-export async function fetchBlocksByShard(
-  shard: string,
-  currentPage: number,
-  rowsPerPage: number = BLOCKS_PER_PAGE
-): Promise<BlockPreview[]> {
+export async function fetchLatestBlockHeightByShard(shard: string): Promise<number> {
   const effectiveShard = shard || getDefaultShardId();
-  const perPage = Math.min(100, Math.max(10, rowsPerPage || BLOCKS_PER_PAGE));
 
   if (isEntityStubMode()) {
-    return mockBlocksByShard(effectiveShard, currentPage, perPage);
+    return 50_000;
   }
 
   try {
     const syncStats = await api.get<SyncStats>(API_ROUTES.CHAIN.SYNCHRONIZATION_STATS);
     const latestBlockIndex = syncStats.heightPerShard[effectiveShard];
+    return Math.max(0, Number(latestBlockIndex) - 1);
+  } catch (e: any) {
+    throw new Error(`Failed to fetch latest block height for shard "${effectiveShard}" - ${e.message}`);
+  }
+}
 
-    const startIndex = latestBlockIndex - 1;
+export async function fetchBlocksByShard(
+  shard: string,
+  from: number | undefined,
+  rowsPerPage: number = BLOCKS_PER_PAGE
+): Promise<{ blocks: BlockPreview[]; latestHeight: number; from: number }> {
+  const effectiveShard = shard || getDefaultShardId();
+  const perPage = Math.min(100, Math.max(10, rowsPerPage || BLOCKS_PER_PAGE));
+
+  if (isEntityStubMode()) {
+    const latestHeight = 50_000;
+    const normalizedFrom = Number.isFinite(from as any)
+      ? Math.max(0, Math.min(latestHeight, Number(from)))
+      : latestHeight;
+
+    return {
+      blocks: mockBlocksByShard(effectiveShard, normalizedFrom, perPage, latestHeight),
+      latestHeight,
+      from: normalizedFrom,
+    };
+  }
+
+  try {
+    const syncStats = await api.get<SyncStats>(API_ROUTES.CHAIN.SYNCHRONIZATION_STATS);
+    const latestBlockIndex = syncStats.heightPerShard[effectiveShard];
+    const latestHeight = Math.max(0, Number(latestBlockIndex) - 1);
+
+    const startIndex = Number.isFinite(from as any)
+      ? Math.max(0, Math.min(latestHeight, Number(from)))
+      : latestHeight;
     const blocks = await api.get<
       Array<Block & { sid: string }>
-    >(API_ROUTES.BLOCKS.LATEST_N_BLOCKS(effectiveShard, startIndex, perPage * currentPage));
+    >(API_ROUTES.BLOCKS.LATEST_N_BLOCKS(effectiveShard, startIndex, perPage));
 
-    return blocks.map(block => {
+    return {
+      blocks: blocks.map(block => {
       const {sid, creator, epoch, index, transactions, time} = block;
 
       const epochId = getEpochId(epoch);
@@ -54,7 +83,10 @@ export async function fetchBlocksByShard(
         txsNumber,
         createdAt
       }
-    });
+      }),
+      latestHeight,
+      from: startIndex,
+    };
   } catch (e: any) {
     throw new Error(`Failed to fetch blocks by shard "${effectiveShard}" - ${e.message}`);
   }
@@ -149,18 +181,17 @@ function getEpochId(fullEpoch: string): number {
 // Mocks (used when node/API is unavailable)
 // -----------------------------
 
-function mockBlocksByShard(shard: string, currentPage: number, perPage: number): BlockPreview[] {
-  const page = Math.max(1, currentPage || 1);
+function mockBlocksByShard(shard: string, from: number, perPage: number, latestHeight: number): BlockPreview[] {
   const epochId = 128;
   const now = Date.now();
-  const start = (page - 1) * perPage;
+  const start = Math.max(0, Math.min(latestHeight, from));
 
   return Array.from({ length: perPage }).map((_, i) => {
-    const height = 50_000 - (start + i);
+    const height = Math.max(0, start - i);
     const creator = mockAddress(`${shard}:${height}`);
     const index = (height % 64) + 1;
     const txsNumber = (height % 7) + 1;
-    const time = now - (start + i) * 12_000; // 12s slot time feel
+    const time = now - (latestHeight - height) * 12_000; // 12s slot time feel
 
     const sid = `${shard}:${height}`;
     const id = `${epochId}:${creator}:${index}`;

@@ -19,7 +19,10 @@ export function ShowRowsSelect({ value }: { value: number }) {
   const handleChange = (next: number) => {
     const params = new URLSearchParams(searchParams);
     params.set('rows', String(next));
-    params.set('page', '1');
+    // dataset changes, so reset blocks pagination anchor
+    params.delete('from');
+    // legacy param
+    params.delete('page');
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
